@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ArtworkDetail.css';
 import { supabase } from '../lib/supabaseClient';
-import { useEffect, useState } from 'react';
 
 // Fallback data removed or moved to default initialization
 
