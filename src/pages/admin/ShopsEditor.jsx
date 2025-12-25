@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUpload from '../../components/ImageUpload';
 
 const ShopsEditor = () => {
     const [shops, setShops] = useState([]);
@@ -145,15 +146,11 @@ const ShopsEditor = () => {
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                             />
                         </div>
-                        <div className="admin-form-group">
-                            <label>Logo Image URL</label>
-                            <input
-                                type="text"
-                                value={form.image_url}
-                                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                                placeholder="https://..."
-                            />
-                        </div>
+                        <ImageUpload
+                            label="Shop Logo"
+                            currentImageUrl={form.image_url}
+                            onUpload={(url) => setForm({ ...form, image_url: url })}
+                        />
                         <div className="admin-form-group">
                             <label>Link</label>
                             <input
@@ -221,7 +218,7 @@ const ShopsEditor = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -179,7 +179,7 @@ const Home = () => {
             <section id="home" className="hero-section">
                 <div className="hero-content">
                     <div className="hero-logo-container">
-                        <img src={mainLogo} alt="Wei In Sight" className="hero-logo-img" />
+                        <img src={heroSettings.logo_url || mainLogo} alt="Wei In Sight" className="hero-logo-img" />
                     </div>
                     <p className="hero-subtitle">
                         {heroSettings.subtitle || '🇨🇦 Toronto-based multi-field artist'}
@@ -206,7 +206,7 @@ const Home = () => {
             <section id="about" className="about-page">
                 <div className="about-container">
                     <div className="about-image">
-                        <img src={artistImage} alt={aboutSettings.title || "Jacky (Wei) Ho"} className="about-photo" />
+                        <img src={aboutSettings.artist_image_url || artistImage} alt={aboutSettings.title || "Jacky (Wei) Ho"} className="about-photo" />
                     </div>
                     <div className="about-content">
                         <h1 className="about-title">{aboutSettings.title || "Jacky (Wei) Ho"}</h1>

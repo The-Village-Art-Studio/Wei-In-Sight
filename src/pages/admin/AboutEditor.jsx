@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUpload from '../../components/ImageUpload';
 
 const AboutEditor = () => {
     const [settings, setSettings] = useState({
         title: '',
         subtitle: '',
+        artist_image_url: '',
         bio_paragraph_1: '',
         bio_paragraph_2: '',
         bio_paragraph_3: ''
@@ -146,6 +148,11 @@ const AboutEditor = () => {
                                 placeholder='e.g., The Artist Behind "Wei In Sight"'
                             />
                         </div>
+                        <ImageUpload
+                            label="Artist Photo"
+                            currentImageUrl={settings.artist_image_url}
+                            onUpload={(url) => setSettings({ ...settings, artist_image_url: url })}
+                        />
                         <div className="admin-form-group">
                             <label>Bio Paragraph 1</label>
                             <textarea

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSettings } from '../hooks/useSupabaseData';
 import './Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+    const { settings: heroSettings } = useSettings('hero');
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -43,7 +45,11 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo" onClick={(e) => handleNavClick(e, '#home')}>
-                    WEI IN SIGHT <span className="logo-dot">.</span>
+                    {heroSettings.logo_url ? (
+                        <img src={heroSettings.logo_url} alt="Wei In Sight" className="nav-logo-img" />
+                    ) : (
+                        <>WEI IN SIGHT <span className="logo-dot">.</span></>
+                    )}
                 </Link>
 
                 <div className={`menu-icon ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>

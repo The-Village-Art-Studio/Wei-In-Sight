@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUpload from '../../components/ImageUpload';
 
 const EventsEditor = () => {
     const [events, setEvents] = useState([]);
@@ -154,15 +155,11 @@ const EventsEditor = () => {
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                             />
                         </div>
-                        <div className="admin-form-group">
-                            <label>Poster Image URL</label>
-                            <input
-                                type="text"
-                                value={form.image_url}
-                                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                                placeholder="https://..."
-                            />
-                        </div>
+                        <ImageUpload
+                            label="Poster Image"
+                            currentImageUrl={form.image_url}
+                            onUpload={(url) => setForm({ ...form, image_url: url })}
+                        />
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
                             {editingEvent ? 'Update Event' : 'Add Event'}
                         </button>

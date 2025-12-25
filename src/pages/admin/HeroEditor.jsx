@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUpload from '../../components/ImageUpload';
 
 const HeroEditor = () => {
     const [settings, setSettings] = useState({
+        logo_url: '',
         subtitle: '',
         cta_primary_text: 'Explore Gallery',
         cta_primary_link: '#gallery',
@@ -86,6 +88,12 @@ const HeroEditor = () => {
 
             <div className="admin-card">
                 <form onSubmit={handleSave}>
+                    <ImageUpload
+                        label="Logo Image"
+                        currentImageUrl={settings.logo_url}
+                        onUpload={(url) => setSettings({ ...settings, logo_url: url })}
+                    />
+
                     <div className="admin-form-group">
                         <label>Subtitle</label>
                         <input

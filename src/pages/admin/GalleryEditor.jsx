@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUpload from '../../components/ImageUpload';
 
 const GalleryEditor = () => {
     const [categories, setCategories] = useState([]);
@@ -246,6 +247,11 @@ const GalleryEditor = () => {
                                 style={{ minHeight: '80px' }}
                             />
                         </div>
+                        <ImageUpload
+                            label="Category Cover Image"
+                            currentImageUrl={categoryForm.image_url}
+                            onUpload={(url) => setCategoryForm({ ...categoryForm, image_url: url })}
+                        />
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
                             Add Category
                         </button>
@@ -393,6 +399,30 @@ const GalleryEditor = () => {
                                         value={artworkForm.description}
                                         onChange={(e) => setArtworkForm({ ...artworkForm, description: e.target.value })}
                                         style={{ minHeight: '80px' }}
+                                    />
+                                </div>
+                                <div className="artwork-images-manager" style={{ marginBottom: '1rem' }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Artwork Images</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                                        {artworkForm.images.map((img, idx) => (
+                                            <div key={idx} style={{ position: 'relative' }}>
+                                                <img src={img} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setArtworkForm({ ...artworkForm, images: artworkForm.images.filter((_, i) => i !== idx) })}
+                                                    style={{
+                                                        position: 'absolute', top: '-5px', right: '-5px',
+                                                        background: 'red', color: 'white', border: 'none',
+                                                        borderRadius: '50%', width: '15px', height: '15px', fontSize: '10px',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >×</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <ImageUpload
+                                        onUpload={(url) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, url] })}
+                                        label="Add Artwork Image"
                                     />
                                 </div>
                                 <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
