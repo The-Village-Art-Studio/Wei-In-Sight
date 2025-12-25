@@ -516,10 +516,12 @@ const GalleryEditor = () => {
                                                     type="button"
                                                     onClick={() => setArtworkForm({ ...artworkForm, images: artworkForm.images.filter((_, i) => i !== idx) })}
                                                     style={{
-                                                        position: 'absolute', top: '-5px', right: '-5px',
-                                                        background: 'red', color: 'white', border: 'none',
-                                                        borderRadius: '50%', width: '15px', height: '15px', fontSize: '10px',
-                                                        cursor: 'pointer'
+                                                        position: 'absolute', top: '-8px', right: '-8px',
+                                                        background: '#ff4d4d', color: 'white', border: 'none',
+                                                        borderRadius: '50%', width: '18px', height: '18px',
+                                                        fontSize: '12px', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        padding: '0', line_height: '1', zIndex: '1'
                                                     }}
                                                 >×</button>
                                             </div>

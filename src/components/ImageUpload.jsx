@@ -55,12 +55,26 @@ const ImageUpload = ({ onUpload, currentImageUrl, label, bucket = 'website-asset
                 border: '1px dashed rgba(255,255,255,0.2)'
             }}>
                 {currentImageUrl && (
-                    <div className="current-image-preview">
+                    <div className="current-image-preview" style={{ position: 'relative' }}>
                         <img
                             src={currentImageUrl}
                             alt="Preview"
                             style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
                         />
+                        <button
+                            type="button"
+                            onClick={() => onUpload('')}
+                            style={{
+                                position: 'absolute', top: '-8px', right: '-8px',
+                                background: '#ff4d4d', color: 'white', border: 'none',
+                                borderRadius: '50%', width: '20px', height: '20px',
+                                fontSize: '12px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                padding: '0', line_height: '1', zIndex: '1',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            }}
+                            title="Remove image"
+                        >×</button>
                     </div>
                 )}
 
