@@ -16,6 +16,7 @@ const AboutEditor = () => {
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     const [exhibitionForm, setExhibitionForm] = useState({ date: '', title: '' });
+    const [editingExhibition, setEditingExhibition] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -74,18 +75,41 @@ const AboutEditor = () => {
         setSaving(false);
     };
 
-    const handleAddExhibition = async (e) => {
-        e.preventDefault();
-        const { error } = await supabase
-            .from('exhibitions')
-            .insert([{ ...exhibitionForm, order: exhibitions.length }]);
+    const handleEditExhibition = (ex) => {
+        setEditingExhibition(ex);
+        setExhibitionForm({ date: ex.date, title: ex.title });
+    };
 
-        if (error) {
-            setMessage({ type: 'error', text: error.message });
+    const resetExhibitionForm = () => {
+        setEditingExhibition(null);
+        setExhibitionForm({ date: '', title: '' });
+    };
+
+    const handleSubmitExhibition = async (e) => {
+        e.preventDefault();
+        if (editingExhibition) {
+            const { error } = await supabase
+                .from('exhibitions')
+                .update(exhibitionForm)
+                .eq('id', editingExhibition.id);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Exhibition updated!' });
+                resetExhibitionForm();
+                fetchData();
+            }
         } else {
-            setMessage({ type: 'success', text: 'Exhibition added!' });
-            setExhibitionForm({ date: '', title: '' });
-            fetchData();
+            const { error } = await supabase
+                .from('exhibitions')
+                .insert([{ ...exhibitionForm, order: exhibitions.length }]);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Exhibition added!' });
+                resetExhibitionForm();
+                fetchData();
+            }
         }
     };
 
@@ -188,6 +212,11 @@ const AboutEditor = () => {
                 <div className="admin-card">
                     <div className="admin-card-header">
                         <h3>Exhibitions & Projects</h3>
+                        {editingExhibition && (
+                            <button onClick={resetExhibitionForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
                     </div>
 
                     <div style={{ marginBottom: '1.5rem', maxHeight: '300px', overflowY: 'auto' }}>
@@ -208,18 +237,27 @@ const AboutEditor = () => {
                                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{ex.date}</span>
                                     <span style={{ color: 'var(--text-color)', marginLeft: '0.75rem' }}>{ex.title}</span>
                                 </div>
-                                <button
-                                    onClick={() => handleDeleteExhibition(ex.id)}
-                                    className="admin-button admin-button-danger"
-                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                >
-                                    Delete
-                                </button>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button
+                                        onClick={() => handleEditExhibition(ex)}
+                                        className="admin-button admin-button-secondary"
+                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteExhibition(ex.id)}
+                                        className="admin-button admin-button-danger"
+                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
 
-                    <form onSubmit={handleAddExhibition}>
+                    <form onSubmit={handleSubmitExhibition}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem' }}>
                             <div className="admin-form-group">
                                 <label>Date</label>
@@ -243,7 +281,7 @@ const AboutEditor = () => {
                             </div>
                         </div>
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                            Add Exhibition
+                            {editingExhibition ? 'Update Exhibition' : 'Add Exhibition'}
                         </button>
                     </form>
                 </div>

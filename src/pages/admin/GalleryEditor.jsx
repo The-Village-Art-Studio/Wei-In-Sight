@@ -11,6 +11,11 @@ const GalleryEditor = () => {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState({ type: '', text: '' });
 
+    // Editing states
+    const [editingCategory, setEditingCategory] = useState(null);
+    const [editingSeries, setEditingSeries] = useState(null);
+    const [editingArtwork, setEditingArtwork] = useState(null);
+
     // Form states
     const [categoryForm, setCategoryForm] = useState({ title: '', description: '', slug: '', image_url: '' });
     const [seriesForm, setSeriesForm] = useState({ title: '', slug: '' });
@@ -77,61 +82,42 @@ const GalleryEditor = () => {
         }
     };
 
-    const handleAddCategory = async (e) => {
-        e.preventDefault();
-        const { data, error } = await supabase
-            .from('categories')
-            .insert([{ ...categoryForm, order: categories.length }])
-            .select();
-
-        if (error) {
-            setMessage({ type: 'error', text: error.message });
-        } else {
-            setMessage({ type: 'success', text: 'Category added successfully!' });
-            setCategoryForm({ title: '', description: '', slug: '', image_url: '' });
-            fetchCategories();
-        }
+    // Category handlers
+    const handleEditCategory = (cat) => {
+        setEditingCategory(cat);
+        setCategoryForm({ title: cat.title, description: cat.description || '', slug: cat.slug, image_url: cat.image_url || '' });
     };
 
-    const handleAddSeries = async (e) => {
-        e.preventDefault();
-        if (!selectedCategory) return;
-
-        const { data, error } = await supabase
-            .from('series')
-            .insert([{ ...seriesForm, category_id: selectedCategory.id, order: series.length }])
-            .select();
-
-        if (error) {
-            setMessage({ type: 'error', text: error.message });
-        } else {
-            setMessage({ type: 'success', text: 'Series added successfully!' });
-            setSeriesForm({ title: '', slug: '' });
-            fetchSeries(selectedCategory.id);
-        }
+    const resetCategoryForm = () => {
+        setEditingCategory(null);
+        setCategoryForm({ title: '', description: '', slug: '', image_url: '' });
     };
 
-    const handleAddArtwork = async (e) => {
+    const handleSubmitCategory = async (e) => {
         e.preventDefault();
-        if (!selectedSeries) return;
-
-        const { data, error } = await supabase
-            .from('artworks')
-            .insert([{ ...artworkForm, series_id: selectedSeries.id, order: artworks.length }])
-            .select();
-
-        if (error) {
-            setMessage({ type: 'error', text: error.message });
+        if (editingCategory) {
+            const { error } = await supabase.from('categories').update(categoryForm).eq('id', editingCategory.id);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Category updated!' });
+                resetCategoryForm();
+                fetchCategories();
+            }
         } else {
-            setMessage({ type: 'success', text: 'Artwork added successfully!' });
-            setArtworkForm({ title: '', year: '', medium: '', dimensions: '', description: '', images: [] });
-            fetchArtworks(selectedSeries.id);
+            const { error } = await supabase.from('categories').insert([{ ...categoryForm, order: categories.length }]);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Category added!' });
+                resetCategoryForm();
+                fetchCategories();
+            }
         }
     };
 
     const handleDeleteCategory = async (id) => {
         if (!window.confirm('Are you sure? This will also delete all series and artworks in this category.')) return;
-
         const { error } = await supabase.from('categories').delete().eq('id', id);
         if (error) {
             setMessage({ type: 'error', text: error.message });
@@ -142,9 +128,44 @@ const GalleryEditor = () => {
         }
     };
 
+    // Series handlers
+    const handleEditSeries = (s) => {
+        setEditingSeries(s);
+        setSeriesForm({ title: s.title, slug: s.slug });
+    };
+
+    const resetSeriesForm = () => {
+        setEditingSeries(null);
+        setSeriesForm({ title: '', slug: '' });
+    };
+
+    const handleSubmitSeries = async (e) => {
+        e.preventDefault();
+        if (!selectedCategory) return;
+
+        if (editingSeries) {
+            const { error } = await supabase.from('series').update(seriesForm).eq('id', editingSeries.id);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Series updated!' });
+                resetSeriesForm();
+                fetchSeries(selectedCategory.id);
+            }
+        } else {
+            const { error } = await supabase.from('series').insert([{ ...seriesForm, category_id: selectedCategory.id, order: series.length }]);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Series added!' });
+                resetSeriesForm();
+                fetchSeries(selectedCategory.id);
+            }
+        }
+    };
+
     const handleDeleteSeries = async (id) => {
         if (!window.confirm('Are you sure? This will also delete all artworks in this series.')) return;
-
         const { error } = await supabase.from('series').delete().eq('id', id);
         if (error) {
             setMessage({ type: 'error', text: error.message });
@@ -155,9 +176,51 @@ const GalleryEditor = () => {
         }
     };
 
+    // Artwork handlers
+    const handleEditArtwork = (art) => {
+        setEditingArtwork(art);
+        setArtworkForm({
+            title: art.title,
+            year: art.year || '',
+            medium: art.medium || '',
+            dimensions: art.dimensions || '',
+            description: art.description || '',
+            images: art.images || []
+        });
+    };
+
+    const resetArtworkForm = () => {
+        setEditingArtwork(null);
+        setArtworkForm({ title: '', year: '', medium: '', dimensions: '', description: '', images: [] });
+    };
+
+    const handleSubmitArtwork = async (e) => {
+        e.preventDefault();
+        if (!selectedSeries) return;
+
+        if (editingArtwork) {
+            const { error } = await supabase.from('artworks').update(artworkForm).eq('id', editingArtwork.id);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Artwork updated!' });
+                resetArtworkForm();
+                fetchArtworks(selectedSeries.id);
+            }
+        } else {
+            const { error } = await supabase.from('artworks').insert([{ ...artworkForm, series_id: selectedSeries.id, order: artworks.length }]);
+            if (error) {
+                setMessage({ type: 'error', text: error.message });
+            } else {
+                setMessage({ type: 'success', text: 'Artwork added!' });
+                resetArtworkForm();
+                fetchArtworks(selectedSeries.id);
+            }
+        }
+    };
+
     const handleDeleteArtwork = async (id) => {
         if (!window.confirm('Are you sure you want to delete this artwork?')) return;
-
         const { error } = await supabase.from('artworks').delete().eq('id', id);
         if (error) {
             setMessage({ type: 'error', text: error.message });
@@ -185,6 +248,11 @@ const GalleryEditor = () => {
                 <div className="admin-card">
                     <div className="admin-card-header">
                         <h3>Categories</h3>
+                        {editingCategory && (
+                            <button onClick={resetCategoryForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
                     </div>
 
                     {loading ? (
@@ -207,19 +275,28 @@ const GalleryEditor = () => {
                                     }}
                                 >
                                     <span style={{ color: 'var(--text-color)' }}>{cat.title}</span>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
-                                        className="admin-button admin-button-danger"
-                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                    >
-                                        Delete
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                                            className="admin-button admin-button-secondary"
+                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
+                                            className="admin-button admin-button-danger"
+                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    <form onSubmit={handleAddCategory}>
+                    <form onSubmit={handleSubmitCategory}>
                         <div className="admin-form-group">
                             <label>Title</label>
                             <input
@@ -253,7 +330,7 @@ const GalleryEditor = () => {
                             onUpload={(url) => setCategoryForm({ ...categoryForm, image_url: url })}
                         />
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                            Add Category
+                            {editingCategory ? 'Update Category' : 'Add Category'}
                         </button>
                     </form>
                 </div>
@@ -262,6 +339,11 @@ const GalleryEditor = () => {
                 <div className="admin-card">
                     <div className="admin-card-header">
                         <h3>Series {selectedCategory && `(${selectedCategory.title})`}</h3>
+                        {editingSeries && (
+                            <button onClick={resetSeriesForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
                     </div>
 
                     {!selectedCategory ? (
@@ -285,18 +367,27 @@ const GalleryEditor = () => {
                                         }}
                                     >
                                         <span style={{ color: 'var(--text-color)' }}>{s.title}</span>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
-                                            className="admin-button admin-button-danger"
-                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                        >
-                                            Delete
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEditSeries(s); }}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
+                                                className="admin-button admin-button-danger"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <form onSubmit={handleAddSeries}>
+                            <form onSubmit={handleSubmitSeries}>
                                 <div className="admin-form-group">
                                     <label>Title</label>
                                     <input
@@ -317,7 +408,7 @@ const GalleryEditor = () => {
                                     />
                                 </div>
                                 <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                                    Add Series
+                                    {editingSeries ? 'Update Series' : 'Add Series'}
                                 </button>
                             </form>
                         </>
@@ -328,6 +419,11 @@ const GalleryEditor = () => {
                 <div className="admin-card">
                     <div className="admin-card-header">
                         <h3>Artworks {selectedSeries && `(${selectedSeries.title})`}</h3>
+                        {editingArtwork && (
+                            <button onClick={resetArtworkForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
                     </div>
 
                     {!selectedSeries ? (
@@ -354,18 +450,27 @@ const GalleryEditor = () => {
                                                 ({art.year})
                                             </span>
                                         </div>
-                                        <button
-                                            onClick={() => handleDeleteArtwork(art.id)}
-                                            className="admin-button admin-button-danger"
-                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                        >
-                                            Delete
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={() => handleEditArtwork(art)}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteArtwork(art.id)}
+                                                className="admin-button admin-button-danger"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <form onSubmit={handleAddArtwork}>
+                            <form onSubmit={handleSubmitArtwork}>
                                 <div className="admin-form-group">
                                     <label>Title</label>
                                     <input
@@ -426,7 +531,7 @@ const GalleryEditor = () => {
                                     />
                                 </div>
                                 <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                                    Add Artwork
+                                    {editingArtwork ? 'Update Artwork' : 'Add Artwork'}
                                 </button>
                             </form>
                         </>
