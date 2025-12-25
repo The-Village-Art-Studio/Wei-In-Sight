@@ -168,7 +168,14 @@ const Home = () => {
     const { settings: aboutSettings, loading: aboutLoading } = useSettings('about');
 
     // Use DB data if available, otherwise fallback to static data
-    const displayCategories = dbCategories && dbCategories.length > 0 ? dbCategories : categories;
+    // Map DB categories to include 'link' property derived from 'slug'
+    const displayCategories = dbCategories && dbCategories.length > 0
+        ? dbCategories.map(cat => ({
+            ...cat,
+            link: `/gallery/${cat.slug}`,
+            image: cat.image_url || `https://placehold.co/600x400/000000/ffffff?text=${encodeURIComponent(cat.title)}`
+        }))
+        : categories;
     const displayEvents = dbEvents && dbEvents.length > 0 ? dbEvents : events;
     const displayShops = dbShops && dbShops.length > 0 ? dbShops : shops;
     const displayExhibitions = dbExhibitions && dbExhibitions.length > 0 ? dbExhibitions : exhibitions;
