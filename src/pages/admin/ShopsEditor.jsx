@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import ImageUpload from '../../components/ImageUpload';
+import DraggableList from '../../components/DraggableList';
 
 const ShopsEditor = () => {
     const [shops, setShops] = useState([]);
@@ -94,6 +95,19 @@ const ShopsEditor = () => {
         setEditingShop(null);
     };
 
+    const handleReorder = async (reorderedShops) => {
+        setShops(reorderedShops);
+        const updates = reorderedShops.map((shop, index) => ({
+            id: shop.id,
+            order: index
+        }));
+
+        for (const update of updates) {
+            await supabase.from('shops').update({ order: update.order }).eq('id', update.id);
+        }
+        setMessage({ type: 'success', text: 'Order updated!' });
+    };
+
     return (
         <div>
             <div className="admin-page-header">
@@ -178,22 +192,28 @@ const ShopsEditor = () => {
                     ) : shops.length === 0 ? (
                         <p style={{ color: 'var(--text-muted)' }}>No shops yet. Add your first shop!</p>
                     ) : (
-                        <div>
-                            {shops.map(shop => (
+                        <DraggableList
+                            items={shops}
+                            onReorder={handleReorder}
+                            droppableId="shops-list"
+                            renderItem={(shop) => (
                                 <div
-                                    key={shop.id}
                                     style={{
                                         padding: '1rem',
                                         marginBottom: '0.75rem',
                                         background: 'rgba(255,255,255,0.03)',
                                         borderRadius: '8px',
-                                        border: '1px solid rgba(255,255,255,0.05)'
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                        cursor: 'grab'
                                     }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <div>
-                                            <h4 style={{ color: 'var(--text-color)', marginBottom: '0.25rem' }}>{shop.name}</h4>
-                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{shop.type}</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <span style={{ color: 'var(--text-muted)', cursor: 'grab' }}>⋮⋮</span>
+                                            <div>
+                                                <h4 style={{ color: 'var(--text-color)', marginBottom: '0.25rem' }}>{shop.name}</h4>
+                                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{shop.type}</p>
+                                            </div>
                                         </div>
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <button
@@ -213,8 +233,8 @@ const ShopsEditor = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                        />
                     )}
                 </div>
             </div>

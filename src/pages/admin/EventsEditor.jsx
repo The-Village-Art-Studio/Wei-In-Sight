@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import ImageUpload from '../../components/ImageUpload';
+import DraggableList from '../../components/DraggableList';
 
 const EventsEditor = () => {
     const [events, setEvents] = useState([]);
@@ -96,6 +97,20 @@ const EventsEditor = () => {
     const resetForm = () => {
         setForm({ title: '', date: '', location: '', description: '', image_url: '', button_text: 'Event Details', button_link: '' });
         setEditingEvent(null);
+    };
+
+    const handleReorder = async (reorderedEvents) => {
+        setEvents(reorderedEvents);
+        // Update order in database
+        const updates = reorderedEvents.map((event, index) => ({
+            id: event.id,
+            order: index
+        }));
+
+        for (const update of updates) {
+            await supabase.from('events').update({ order: update.order }).eq('id', update.id);
+        }
+        setMessage({ type: 'success', text: 'Order updated!' });
     };
 
     return (
@@ -204,23 +219,29 @@ const EventsEditor = () => {
                     ) : events.length === 0 ? (
                         <p style={{ color: 'var(--text-muted)' }}>No events yet. Add your first event!</p>
                     ) : (
-                        <div>
-                            {events.map(event => (
+                        <DraggableList
+                            items={events}
+                            onReorder={handleReorder}
+                            droppableId="events-list"
+                            renderItem={(event) => (
                                 <div
-                                    key={event.id}
                                     style={{
                                         padding: '1rem',
                                         marginBottom: '0.75rem',
                                         background: 'rgba(255,255,255,0.03)',
                                         borderRadius: '8px',
-                                        border: '1px solid rgba(255,255,255,0.05)'
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                        cursor: 'grab'
                                     }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <div>
-                                            <h4 style={{ color: 'var(--text-color)', marginBottom: '0.25rem' }}>{event.title}</h4>
-                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{event.date}</p>
-                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>📍 {event.location}</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <span style={{ color: 'var(--text-muted)', cursor: 'grab' }}>⋮⋮</span>
+                                            <div>
+                                                <h4 style={{ color: 'var(--text-color)', marginBottom: '0.25rem' }}>{event.title}</h4>
+                                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{event.date}</p>
+                                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>📍 {event.location}</p>
+                                            </div>
                                         </div>
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <button
@@ -240,8 +261,8 @@ const EventsEditor = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                        />
                     )}
                 </div>
             </div>

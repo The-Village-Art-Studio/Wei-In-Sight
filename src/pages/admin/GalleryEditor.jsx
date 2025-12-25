@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import ImageUpload from '../../components/ImageUpload';
+import DraggableList from '../../components/DraggableList';
 
 const GalleryEditor = () => {
     const [categories, setCategories] = useState([]);
@@ -231,6 +232,31 @@ const GalleryEditor = () => {
         }
     };
 
+    // Reorder handlers
+    const handleReorderCategories = async (reorderedCategories) => {
+        setCategories(reorderedCategories);
+        for (let i = 0; i < reorderedCategories.length; i++) {
+            await supabase.from('categories').update({ order: i }).eq('id', reorderedCategories[i].id);
+        }
+        setMessage({ type: 'success', text: 'Categories order updated!' });
+    };
+
+    const handleReorderSeries = async (reorderedSeries) => {
+        setSeries(reorderedSeries);
+        for (let i = 0; i < reorderedSeries.length; i++) {
+            await supabase.from('series').update({ order: i }).eq('id', reorderedSeries[i].id);
+        }
+        setMessage({ type: 'success', text: 'Series order updated!' });
+    };
+
+    const handleReorderArtworks = async (reorderedArtworks) => {
+        setArtworks(reorderedArtworks);
+        for (let i = 0; i < reorderedArtworks.length; i++) {
+            await supabase.from('artworks').update({ order: i }).eq('id', reorderedArtworks[i].id);
+        }
+        setMessage({ type: 'success', text: 'Artworks order updated!' });
+    };
+
     return (
         <div>
             <div className="admin-page-header">
@@ -260,40 +286,47 @@ const GalleryEditor = () => {
                         <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
                     ) : (
                         <div style={{ marginBottom: '1rem' }}>
-                            {categories.map(cat => (
-                                <div
-                                    key={cat.id}
-                                    onClick={() => { setSelectedCategory(cat); setSelectedSeries(null); }}
-                                    style={{
-                                        padding: '0.75rem',
-                                        marginBottom: '0.5rem',
-                                        background: selectedCategory?.id === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <span style={{ color: 'var(--text-color)' }}>{cat.title}</span>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
-                                            className="admin-button admin-button-secondary"
-                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
-                                            className="admin-button admin-button-danger"
-                                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                        >
-                                            Delete
-                                        </button>
+                            <DraggableList
+                                items={categories}
+                                onReorder={handleReorderCategories}
+                                droppableId="categories-list"
+                                renderItem={(cat) => (
+                                    <div
+                                        onClick={() => { setSelectedCategory(cat); setSelectedSeries(null); }}
+                                        style={{
+                                            padding: '0.75rem',
+                                            marginBottom: '0.5rem',
+                                            background: selectedCategory?.id === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                            borderRadius: '6px',
+                                            cursor: 'grab',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
+                                            <span style={{ color: 'var(--text-color)' }}>{cat.title}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
+                                                className="admin-button admin-button-danger"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )}
+                            />
                         </div>
                     )}
 
@@ -352,40 +385,47 @@ const GalleryEditor = () => {
                     ) : (
                         <>
                             <div style={{ marginBottom: '1rem' }}>
-                                {series.map(s => (
-                                    <div
-                                        key={s.id}
-                                        onClick={() => setSelectedSeries(s)}
-                                        style={{
-                                            padding: '0.75rem',
-                                            marginBottom: '0.5rem',
-                                            background: selectedSeries?.id === s.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}
-                                    >
-                                        <span style={{ color: 'var(--text-color)' }}>{s.title}</span>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleEditSeries(s); }}
-                                                className="admin-button admin-button-secondary"
-                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
-                                                className="admin-button admin-button-danger"
-                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                            >
-                                                Delete
-                                            </button>
+                                <DraggableList
+                                    items={series}
+                                    onReorder={handleReorderSeries}
+                                    droppableId="series-list"
+                                    renderItem={(s) => (
+                                        <div
+                                            onClick={() => setSelectedSeries(s)}
+                                            style={{
+                                                padding: '0.75rem',
+                                                marginBottom: '0.5rem',
+                                                background: selectedSeries?.id === s.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                                borderRadius: '6px',
+                                                cursor: 'grab',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
+                                                <span style={{ color: 'var(--text-color)' }}>{s.title}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleEditSeries(s); }}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
+                                                    className="admin-button admin-button-danger"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )}
+                                />
                             </div>
 
                             <form onSubmit={handleSubmitSeries}>
@@ -432,43 +472,49 @@ const GalleryEditor = () => {
                     ) : (
                         <>
                             <div style={{ marginBottom: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
-                                {artworks.map(art => (
-                                    <div
-                                        key={art.id}
-                                        style={{
-                                            padding: '0.75rem',
-                                            marginBottom: '0.5rem',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            borderRadius: '6px',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}
-                                    >
-                                        <div>
-                                            <span style={{ color: 'var(--text-color)' }}>{art.title}</span>
-                                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
-                                                ({art.year})
-                                            </span>
+                                <DraggableList
+                                    items={artworks}
+                                    onReorder={handleReorderArtworks}
+                                    droppableId="artworks-list"
+                                    renderItem={(art) => (
+                                        <div
+                                            style={{
+                                                padding: '0.75rem',
+                                                marginBottom: '0.5rem',
+                                                background: 'rgba(255,255,255,0.03)',
+                                                borderRadius: '6px',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                cursor: 'grab'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
+                                                <span style={{ color: 'var(--text-color)' }}>{art.title}</span>
+                                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                                    ({art.year})
+                                                </span>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button
+                                                    onClick={() => handleEditArtwork(art)}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteArtwork(art.id)}
+                                                    className="admin-button admin-button-danger"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button
-                                                onClick={() => handleEditArtwork(art)}
-                                                className="admin-button admin-button-secondary"
-                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteArtwork(art.id)}
-                                                className="admin-button admin-button-danger"
-                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                                    )}
+                                />
                             </div>
 
                             <form onSubmit={handleSubmitArtwork}>
