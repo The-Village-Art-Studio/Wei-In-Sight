@@ -295,9 +295,15 @@ const Home = () => {
                                     <span className="event-date">{event.date}</span>
                                     <div className="event-location">📍 {event.location}</div>
                                     <p className="event-description">{event.description}</p>
-                                    <Button variant="secondary" onClick={() => console.log('RSVP')}>
-                                        Event Details
-                                    </Button>
+                                    {event.button_link ? (
+                                        <a href={event.button_link} target="_blank" rel="noopener noreferrer" className="event-button">
+                                            {event.button_text || 'Event Details'}
+                                        </a>
+                                    ) : (
+                                        <Button variant="secondary" onClick={() => console.log('Event details')}>
+                                            {event.button_text || 'Event Details'}
+                                        </Button>
+                                    )}
                                 </div>
                                 <div className="event-poster">
                                     <img src={event.image || event.image_url} alt={event.title} className="event-poster-img" />

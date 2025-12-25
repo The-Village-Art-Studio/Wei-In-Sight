@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS events (
     location TEXT,
     description TEXT,
     image_url TEXT,
+    button_text TEXT DEFAULT 'Event Details',
+    button_link TEXT,
     "order" INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

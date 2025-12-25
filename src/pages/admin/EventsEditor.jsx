@@ -12,7 +12,9 @@ const EventsEditor = () => {
         date: '',
         location: '',
         description: '',
-        image_url: ''
+        image_url: '',
+        button_text: 'Event Details',
+        button_link: ''
     });
 
     useEffect(() => {
@@ -73,7 +75,9 @@ const EventsEditor = () => {
             date: event.date,
             location: event.location,
             description: event.description,
-            image_url: event.image_url || ''
+            image_url: event.image_url || '',
+            button_text: event.button_text || 'Event Details',
+            button_link: event.button_link || ''
         });
     };
 
@@ -90,7 +94,7 @@ const EventsEditor = () => {
     };
 
     const resetForm = () => {
-        setForm({ title: '', date: '', location: '', description: '', image_url: '' });
+        setForm({ title: '', date: '', location: '', description: '', image_url: '', button_text: 'Event Details', button_link: '' });
         setEditingEvent(null);
     };
 
@@ -160,6 +164,29 @@ const EventsEditor = () => {
                             currentImageUrl={form.image_url}
                             onUpload={(url) => setForm({ ...form, image_url: url })}
                         />
+                        <h4 style={{ color: 'var(--text-color)', marginTop: '1.5rem', marginBottom: '1rem' }}>
+                            Event Button
+                        </h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
+                            <div className="admin-form-group">
+                                <label>Button Text</label>
+                                <input
+                                    type="text"
+                                    value={form.button_text}
+                                    onChange={(e) => setForm({ ...form, button_text: e.target.value })}
+                                    placeholder="Event Details"
+                                />
+                            </div>
+                            <div className="admin-form-group">
+                                <label>Button Link</label>
+                                <input
+                                    type="text"
+                                    value={form.button_link}
+                                    onChange={(e) => setForm({ ...form, button_link: e.target.value })}
+                                    placeholder="https://..."
+                                />
+                            </div>
+                        </div>
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
                             {editingEvent ? 'Update Event' : 'Add Event'}
                         </button>

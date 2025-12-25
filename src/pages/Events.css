@@ -83,6 +83,27 @@
     opacity: 0.8;
 }
 
+.event-button {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-color);
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.event-button:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
+}
+
 .event-poster {
     flex: 0 0 250px;
     height: 350px;
