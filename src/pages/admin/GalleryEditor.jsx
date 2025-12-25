@@ -20,7 +20,7 @@ const GalleryEditor = () => {
     const [categoryForm, setCategoryForm] = useState({ title: '', description: '', slug: '', image_url: '' });
     const [seriesForm, setSeriesForm] = useState({ title: '', slug: '' });
     const [artworkForm, setArtworkForm] = useState({
-        title: '', year: '', medium: '', dimensions: '', description: '', images: []
+        title: '', year: '', medium: '', dimensions: '', description: '', images: [], video_url: ''
     });
 
     useEffect(() => {
@@ -185,13 +185,14 @@ const GalleryEditor = () => {
             medium: art.medium || '',
             dimensions: art.dimensions || '',
             description: art.description || '',
-            images: art.images || []
+            images: art.images || [],
+            video_url: art.video_url || ''
         });
     };
 
     const resetArtworkForm = () => {
         setEditingArtwork(null);
-        setArtworkForm({ title: '', year: '', medium: '', dimensions: '', description: '', images: [] });
+        setArtworkForm({ title: '', year: '', medium: '', dimensions: '', description: '', images: [], video_url: '' });
     };
 
     const handleSubmitArtwork = async (e) => {
@@ -531,6 +532,20 @@ const GalleryEditor = () => {
                                         onUpload={(url) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, url] })}
                                         label="Add Artwork Image"
                                     />
+                                </div>
+                                <div className="admin-form-group">
+                                    <label>Video URL (YouTube link or direct video URL)</label>
+                                    <input
+                                        type="text"
+                                        value={artworkForm.video_url}
+                                        onChange={(e) => setArtworkForm({ ...artworkForm, video_url: e.target.value })}
+                                        placeholder="https://youtube.com/watch?v=... or video file URL"
+                                    />
+                                    {artworkForm.video_url && (
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                                            Preview will display on the artwork detail page
+                                        </p>
+                                    )}
                                 </div>
                                 <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
                                     {editingArtwork ? 'Update Artwork' : 'Add Artwork'}

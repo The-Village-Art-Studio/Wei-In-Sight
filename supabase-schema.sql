@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS artworks (
     dimensions TEXT,
     description TEXT,
     images JSONB DEFAULT '[]',
+    video_url TEXT,
     "order" INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
