@@ -1,0 +1,144 @@
+.navbar {
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(10px);
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.navbar-logo {
+    color: var(--text-color);
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo-dot {
+    color: var(--primary-color);
+    text-shadow: var(--glow-primary);
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    height: 80px;
+}
+
+.nav-links {
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0 1.5rem;
+    height: 100%;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.nav-links::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+    box-shadow: var(--glow-primary);
+}
+
+.nav-links:hover::after,
+.nav-links.active::after {
+    width: 100%;
+}
+
+.nav-links:hover,
+.nav-links.active {
+    color: var(--primary-color);
+    text-shadow: var(--glow-primary);
+}
+
+.menu-icon {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+}
+
+.bar {
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+@media screen and (max-width: 960px) {
+    .menu-icon {
+        display: flex;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 90vh;
+        position: absolute;
+        top: 80px;
+        left: -100%;
+        opacity: 1;
+        transition: all 0.5s ease;
+        background: rgba(5, 5, 5, 0.95);
+        backdrop-filter: blur(10px);
+        border-right: 1px solid var(--primary-color);
+    }
+
+    .nav-menu.active {
+        left: 0;
+        opacity: 1;
+        transition: all 0.5s ease;
+        z-index: 1;
+    }
+
+    .nav-links {
+        text-align: center;
+        padding: 2rem;
+        width: 100%;
+        display: table;
+    }
+
+    .nav-links:hover {
+        background-color: rgba(0, 243, 255, 0.1);
+        border-radius: 0;
+    }
+}

@@ -1,0 +1,30 @@
+.footer {
+    background: rgba(5, 5, 5, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem 0;
+    margin-top: auto;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.social-links {
+    margin-bottom: 1rem;
+}
+
+.social-links a {
+    margin: 0 1rem;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.copyright {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}

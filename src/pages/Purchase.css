@@ -1,0 +1,118 @@
+.purchase-page {
+    padding: 4rem 0;
+    background-color: #050505;
+    /* Slightly darker background */
+}
+
+.purchase-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.purchase-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.purchase-subtitle {
+    color: #ffffff;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.shop-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.shop-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 20px rgba(var(--secondary-rgb), 0.2);
+}
+
+.shop-image {
+    height: 200px;
+    width: 100%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    filter: brightness(0) invert(1);
+}
+
+.shop-content {
+    padding: 1.5rem;
+    text-align: left;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-name {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.shop-type {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.shop-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.shop-link {
+    margin-top: auto;
+    color: var(--primary-color);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.shop-link::after {
+    content: '→';
+    transition: transform 0.3s ease;
+}
+
+.shop-card:hover .shop-link::after {
+    transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+    .purchase-page {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .purchase-container {
+        padding: 1.5rem;
+    }
+}

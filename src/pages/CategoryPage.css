@@ -1,0 +1,165 @@
+.category-page {
+    padding-top: 100px;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 4rem;
+}
+
+.category-header {
+    margin-bottom: 3rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+}
+
+.category-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-description {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    letter-spacing: 1px;
+}
+
+.placeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.placeholder-item {
+    height: 350px;
+    background: #f0f0f0;
+    /* Light grey placeholder for image */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: block;
+    /* Link is inline by default */
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.placeholder-item:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.placeholder-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.placeholder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.placeholder-item:hover .placeholder-overlay {
+    opacity: 1;
+}
+
+.overlay-title {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-family: var(--font-heading);
+    margin-bottom: 0.5rem;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.overlay-year {
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 1rem;
+}
+
+/* Series Menu Styles */
+.series-menu {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    overflow-x: auto;
+    background: var(--bg-color);
+    /* Ensure background is solid for sticky */
+    z-index: 100;
+}
+
+.sticky-menu {
+    position: sticky;
+    top: 80px;
+    /* Below navbar */
+}
+
+.series-tab {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    border-radius: 4px;
+}
+
+.series-tab:hover {
+    color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.series-section {
+    margin-bottom: 6rem;
+    scroll-margin-top: 150px;
+    /* Offset for scroll to element */
+}
+
+.series-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    border-left: 3px solid var(--secondary-color);
+    padding-left: 1rem;
+}
+
+.placeholder-text-inner {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}

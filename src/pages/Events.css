@@ -1,0 +1,137 @@
+.events-page {
+    padding: 4rem 0;
+    background-color: var(--background-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.events-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.events-title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.event-card {
+    display: flex;
+    gap: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem;
+    border-radius: 10px;
+    text-align: left;
+    transition: all 0.3s ease;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-color: var(--primary-color);
+}
+
+.event-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.event-name {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.event-date {
+    display: inline-block;
+    font-family: var(--font-heading);
+    color: #ffffff;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+}
+
+.event-location {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-description {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.event-poster {
+    flex: 0 0 250px;
+    height: 350px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.event-card:hover .event-poster-img {
+    transform: scale(1.05);
+}
+
+.no-events {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .events-page {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .events-container {
+        padding: 1.5rem;
+    }
+
+    .event-card {
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+
+    .event-poster {
+        flex: 0 0 300px;
+        height: 300px;
+        width: 100%;
+        order: -1;
+        /* Move image to top on mobile */
+    }
+
+    .event-name {
+        font-size: 1.5rem;
+    }
+}

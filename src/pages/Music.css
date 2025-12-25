@@ -1,0 +1,120 @@
+.music-page {
+    padding-top: 100px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 4rem;
+}
+
+.music-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.music-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.music-subtitle {
+    color: #ffffff;
+    margin-bottom: 3rem;
+    letter-spacing: 1px;
+}
+
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.music-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.music-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 20px rgba(var(--secondary-rgb), 0.2);
+}
+
+.music-image {
+    height: 200px;
+    width: 100%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+}
+
+.music-content {
+    padding: 1.5rem;
+    text-align: left;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.music-name {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.music-type {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.music-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.music-link {
+    margin-top: auto;
+    color: var(--primary-color);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.music-link::after {
+    content: '→';
+    transition: transform 0.3s ease;
+}
+
+.music-card:hover .music-link::after {
+    transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+    .music-page {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .music-container {
+        padding: 1.5rem;
+    }
+}
