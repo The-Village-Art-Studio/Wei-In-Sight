@@ -10,6 +10,7 @@ import './About.css';
 import './Contact.css';
 import './Events.css';
 import './Purchase.css';
+import { useSupabaseData, useSettings } from '../hooks/useSupabaseData';
 import artistImage from '../assets/artist.jpg';
 import spotifyLogo from '../assets/spotify-logo.png';
 import appleMusicLogo from '../assets/apple-music-logo.png';
@@ -156,6 +157,22 @@ const exhibitions = [
 ];
 
 const Home = () => {
+    // Fetch dynamic data
+    const { data: dbCategories, loading: catsLoading } = useSupabaseData('categories');
+    const { data: dbEvents, loading: eventsLoading } = useSupabaseData('events');
+    const { data: dbShops, loading: shopsLoading } = useSupabaseData('shops');
+    const { data: dbExhibitions, loading: exhibitionsLoading } = useSupabaseData('exhibitions');
+
+    // Fetch section settings
+    const { settings: heroSettings, loading: heroLoading } = useSettings('hero');
+    const { settings: aboutSettings, loading: aboutLoading } = useSettings('about');
+
+    // Use DB data if available, otherwise fallback to static data
+    const displayCategories = dbCategories && dbCategories.length > 0 ? dbCategories : categories;
+    const displayEvents = dbEvents && dbEvents.length > 0 ? dbEvents : events;
+    const displayShops = dbShops && dbShops.length > 0 ? dbShops : shops;
+    const displayExhibitions = dbExhibitions && dbExhibitions.length > 0 ? dbExhibitions : exhibitions;
+
     return (
         <div className="home-page">
             {/* Hero Section */}
@@ -165,14 +182,18 @@ const Home = () => {
                         <img src={mainLogo} alt="Wei In Sight" className="hero-logo-img" />
                     </div>
                     <p className="hero-subtitle">
-                        🇨🇦 Toronto-based multi-field artist
+                        {heroSettings.subtitle || '🇨🇦 Toronto-based multi-field artist'}
                     </p>
                     <div className="hero-actions">
-                        <a href="#gallery">
-                            <Button variant="primary">Explore Gallery</Button>
+                        <a href={heroSettings.cta_primary_link || '#gallery'}>
+                            <Button variant="primary">
+                                {heroSettings.cta_primary_text || 'Explore Gallery'}
+                            </Button>
                         </a>
-                        <a href="#contact">
-                            <Button variant="secondary">Contact Me</Button>
+                        <a href={heroSettings.cta_secondary_link || '#contact'}>
+                            <Button variant="secondary">
+                                {heroSettings.cta_secondary_text || 'Contact Me'}
+                            </Button>
                         </a>
                     </div>
                 </div>
@@ -185,25 +206,28 @@ const Home = () => {
             <section id="about" className="about-page">
                 <div className="about-container">
                     <div className="about-image">
-                        <img src={artistImage} alt="Jacky (Wei) Ho" className="about-photo" />
+                        <img src={artistImage} alt={aboutSettings.title || "Jacky (Wei) Ho"} className="about-photo" />
                     </div>
                     <div className="about-content">
-                        <h1 className="about-title">Jacky (Wei) Ho</h1>
-                        <h2 className="about-subtitle">The Artist Behind "Wei In Sight"</h2>
+                        <h1 className="about-title">{aboutSettings.title || "Jacky (Wei) Ho"}</h1>
+                        <h2 className="about-subtitle">{aboutSettings.subtitle || 'The Artist Behind "Wei In Sight"'}</h2>
                         <p className="about-text">
-                            "Wei Ho" is the name my grandpa gave me; it means "Afraid of nothing." He used to be a Fine Art Teacher in school, so I keep using this name for my art to pay tribute to him. My full name is Jacky (Wei) Ho.
+                            {aboutSettings.bio_paragraph_1 || '"Wei Ho" is the name my grandpa gave me; it means "Afraid of nothing." He used to be a Fine Art Teacher in school, so I keep using this name for my art to pay tribute to him. My full name is Jacky (Wei) Ho.'}
                         </p>
+                        {aboutSettings.bio_paragraph_2 && (
+                            <p className="about-text">{aboutSettings.bio_paragraph_2}</p>
+                        )}
+                        {!aboutSettings.bio_paragraph_2 && (
+                            <p className="about-text">"Wei In Sight" means "All my artworks will stay in everyone's sight."</p>
+                        )}
                         <p className="about-text">
-                            "Wei In Sight" means "All my artworks will stay in everyone's sight."
-                        </p>
-                        <p className="about-text">
-                            I am a Toronto-based multi-field artist with a passion for exploring the intersection of technology, tradition, and expression. My work spans across watchmaking, fashion design, visual arts, and music, each discipline informing the others in a continuous cycle of creativity.
+                            {aboutSettings.bio_paragraph_3 || 'I am a Toronto-based multi-field artist with a passion for exploring the intersection of technology, tradition, and expression. My work spans across watchmaking, fashion design, visual arts, and music, each discipline informing the others in a continuous cycle of creativity.'}
                         </p>
 
                         <div className="exhibitions-section">
                             <h3 className="exhibitions-title">EXHIBITIONS AND PROJECTS</h3>
                             <ul className="exhibitions-list">
-                                {exhibitions.map((item, index) => (
+                                {displayExhibitions.map((item, index) => (
                                     <li key={index} className="exhibition-item">
                                         <span className="exhibition-date">{item.date}</span>
                                         <span className="exhibition-name">{item.title}</span>
@@ -223,7 +247,7 @@ const Home = () => {
                         <p className="gallery-subtitle">Explore the multi-disciplinary works of Jacky (Wei) Ho</p>
                     </div>
                     <div className="categories-grid">
-                        {categories.map((category) => (
+                        {displayCategories.map((category) => (
                             <CategoryCard key={category.id} {...category} />
                         ))}
                     </div>
@@ -256,8 +280,8 @@ const Home = () => {
             <section id="events" className="events-page">
                 <div className="events-container">
                     <h1 className="events-title">Upcoming Shows</h1>
-                    {events.length > 0 ? (
-                        events.map((event) => (
+                    {displayEvents.length > 0 ? (
+                        displayEvents.map((event) => (
                             <div key={event.id} className="event-card">
                                 <div className="event-content">
                                     <h2 className="event-name">{event.title}</h2>
@@ -269,7 +293,7 @@ const Home = () => {
                                     </Button>
                                 </div>
                                 <div className="event-poster">
-                                    <img src={event.image} alt={event.title} className="event-poster-img" />
+                                    <img src={event.image || event.image_url} alt={event.title} className="event-poster-img" />
                                 </div>
                             </div>
                         ))
@@ -285,9 +309,9 @@ const Home = () => {
                     <h1 className="purchase-title">Where to Purchase</h1>
                     <p className="purchase-subtitle">Collect original works and exclusive merchandise</p>
                     <div className="shop-grid">
-                        {shops.map((shop) => (
+                        {displayShops.map((shop) => (
                             <a key={shop.id} href={shop.link} className="shop-card">
-                                <img src={shop.image} alt={shop.name} className="shop-image" />
+                                <img src={shop.image || shop.image_url} alt={shop.name} className="shop-image" />
                                 <div className="shop-content">
                                     <h2 className="shop-name">{shop.name}</h2>
                                     <span className="shop-type">{shop.type}</span>

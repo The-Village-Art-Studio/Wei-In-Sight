@@ -1,8 +1,11 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './CategoryPage.css';
+import { supabase } from '../lib/supabaseClient';
+import { useState, useEffect } from 'react';
 
-const categoryData = {
+// Fallback data is kept for structure if DB is empty
+const fallbackCategoryData = {
     'artwork': {
         title: 'Artwork',
         description: 'Paintings, Sculpture, Digital Art, and Mixed Media.',
@@ -13,39 +16,67 @@ const categoryData = {
             { id: 'mixed-media', title: 'Mixed Media' }
         ]
     },
-    fashion: {
-        title: 'Fashion Design',
-        description: 'Avant-garde Apparel and Textiles',
-        series: [
-            { id: 'runway', title: 'Runway Collection' },
-            { id: 'textiles', title: 'Textile Design' },
-            { id: 'sketches', title: 'Design Sketches' }
-        ]
-    },
-    'product-design': {
-        title: 'Product Design',
-        description: 'Industrial Design and Functional Art',
-        series: [
-            { id: 'industrial', title: 'Industrial Design' },
-            { id: 'furniture', title: 'Furniture' },
-            { id: 'prototypes', title: 'Prototypes' }
-        ]
-    },
-    watchmaking: {
-        title: 'Watchmaking',
-        description: 'Mechanical Timepieces and Horology',
-        series: [
-            { id: 'complications', title: 'Complications' },
-            { id: 'restoration', title: 'Restoration' },
-            { id: 'movements', title: 'Movement Studies' }
-        ]
-    }
+    // ... rest of the fallback could be here or handled in-line
 };
 
 const CategoryPage = () => {
     const { categoryId } = useParams();
     const navigate = useNavigate();
-    const data = categoryData[categoryId] || { title: 'Unknown Category', description: '' };
+
+    const [category, setCategory] = useState(null);
+    const [series, setSeries] = useState([]);
+    const [artworks, setArtworks] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategoryData = async () => {
+            setLoading(true);
+            try {
+                // 1. Get category by slug
+                const { data: catData, error: catError } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .eq('slug', categoryId)
+                    .single();
+
+                if (catError) throw catError;
+                setCategory(catData);
+
+                // 2. Get series for this category
+                const { data: seriesData, error: seriesError } = await supabase
+                    .from('series')
+                    .select('*')
+                    .eq('category_id', catData.id)
+                    .order('order', { ascending: true });
+
+                if (seriesError) throw seriesError;
+                setSeries(seriesData);
+
+                // 3. Get artworks for all series in this category
+                const seriesIds = seriesData.map(s => s.id);
+                const { data: artData, error: artError } = await supabase
+                    .from('artworks')
+                    .select('*')
+                    .in('series_id', seriesIds)
+                    .order('order', { ascending: true });
+
+                if (artError) throw artError;
+                setArtworks(artData);
+
+            } catch (err) {
+                console.error('Error fetching category data:', err);
+                // Fallback handled by category === null
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (categoryId) {
+            fetchCategoryData();
+        }
+    }, [categoryId]);
+
+    const data = category || fallbackCategoryData[categoryId] || { title: 'Loading...', description: '' };
 
     const handleBackClick = (e) => {
         e.preventDefault();
@@ -74,10 +105,10 @@ const CategoryPage = () => {
             </div>
 
             <div className="category-content">
-                {data.series ? (
+                {series.length > 0 ? (
                     <>
                         <div className="series-menu sticky-menu">
-                            {data.series.map((s) => (
+                            {series.map((s) => (
                                 <button
                                     key={s.id}
                                     className="series-tab"
@@ -89,39 +120,48 @@ const CategoryPage = () => {
                         </div>
 
                         <div className="series-sections">
-                            {data.series.map((s) => (
+                            {series.map((s) => (
                                 <section key={s.id} id={s.id} className="series-section">
                                     <h2 className="series-title">{s.title}</h2>
-                                    <div className="placeholder-grid">
-                                        {[1, 2, 3, 4, 5, 6].map((item) => (
-                                            <Link
-                                                key={item}
-                                                to={`/gallery/${categoryId}/artwork/${item}`}
-                                                className="placeholder-item"
-                                            >
-                                                <div className="placeholder-content">
-                                                    {/* Image placeholder (bg color) is handled by CSS, we just need overlay */}
-                                                    <div className="placeholder-overlay">
-                                                        <span className="overlay-title">Artwork Title #{item}</span>
-                                                        <span className="overlay-year">2024</span>
+                                    <div className="artwork-grid">
+                                        {artworks
+                                            .filter(art => art.series_id === s.id)
+                                            .map((art) => (
+                                                <Link
+                                                    key={art.id}
+                                                    to={`/gallery/${categoryId}/artwork/${art.id}`}
+                                                    className="artwork-item"
+                                                >
+                                                    <div className="artwork-card-content">
+                                                        <img
+                                                            src={art.images?.[0] || 'https://placehold.co/600x400/000000/ffffff?text=Artwork'}
+                                                            alt={art.title}
+                                                            className="artwork-card-img"
+                                                        />
+                                                        <div className="artwork-overlay">
+                                                            <span className="overlay-title">{art.title}</span>
+                                                            <span className="overlay-year">{art.year}</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Link>
-                                        ))}
+                                                </Link>
+                                            ))}
+                                        {artworks.filter(art => art.series_id === s.id).length === 0 && (
+                                            <p className="no-art-message">No artworks added to this series yet.</p>
+                                        )}
                                     </div>
                                 </section>
                             ))}
                         </div>
                     </>
+                ) : loading ? (
+                    <div className="loading-state">
+                        <div className="loading-spinner"></div>
+                        <p>Loading gallery...</p>
+                    </div>
                 ) : (
-                    <>
+                    <div className="empty-state">
                         <p className="placeholder-text">Gallery content for {data.title} coming soon...</p>
-                        <div className="placeholder-grid">
-                            {[1, 2, 3, 4, 5, 6].map((item) => (
-                                <div key={item} className="placeholder-item"></div>
-                            ))}
-                        </div>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
