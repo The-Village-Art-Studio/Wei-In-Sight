@@ -19,6 +19,7 @@ const ArtworkDetail = () => {
     const [artwork, setArtwork] = useState(null);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchArtwork = async () => {
@@ -44,14 +45,20 @@ const ArtworkDetail = () => {
         }
     }, [artworkId]);
 
-    const nextSlide = () => {
+    const nextSlide = (e) => {
+        if (e) e.stopPropagation();
         if (!artwork?.images) return;
         setCurrentSlide((prev) => (prev === artwork.images.length - 1 ? 0 : prev + 1));
     };
 
-    const prevSlide = () => {
+    const prevSlide = (e) => {
+        if (e) e.stopPropagation();
         if (!artwork?.images) return;
         setCurrentSlide((prev) => (prev === 0 ? artwork.images.length - 1 : prev - 1));
+    };
+
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
     };
 
     if (loading) {
@@ -82,7 +89,7 @@ const ArtworkDetail = () => {
 
             <div className="artwork-container">
                 {/* Left: Slider */}
-                <div className="artwork-slider">
+                <div className="artwork-slider" onClick={toggleModal} style={{ cursor: 'zoom-in' }}>
                     <div className="slider-wrapper">
                         {images.length > 0 ? (
                             <img
@@ -145,6 +152,29 @@ const ArtworkDetail = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modal Gallery */}
+            {isModalOpen && images.length > 0 && (
+                <div className="modal-overlay" onClick={toggleModal}>
+                    <button className="modal-close" onClick={toggleModal}>×</button>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <img
+                            src={images[currentSlide]}
+                            alt={`${artwork.title} full view`}
+                            className="modal-image"
+                        />
+                        {images.length > 1 && (
+                            <>
+                                <button className="modal-btn prev" onClick={prevSlide}>‹</button>
+                                <button className="modal-btn next" onClick={nextSlide}>›</button>
+                            </>
+                        )}
+                        <div className="modal-counter">
+                            {currentSlide + 1} / {images.length}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
