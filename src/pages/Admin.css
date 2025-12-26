@@ -103,6 +103,21 @@
     padding: 2rem;
     min-height: 100vh;
     overflow-x: auto;
+    width: calc(100vw - 260px);
+}
+
+.admin-columns-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding-bottom: 2rem;
+}
+
+.admin-columns-container>.admin-card {
+    flex: 0 0 auto;
+    min-width: 400px;
+    width: auto;
+    margin-bottom: 0;
 }
 
 /* Loading State */

@@ -390,34 +390,139 @@ const GalleryEditor = () => {
                 </div>
             )}
 
-            <div className="admin-columns-container" style={{ overflowX: 'auto', paddingBottom: '1rem', margin: '0 -1rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(350px, 1fr) minmax(350px, 1fr) minmax(350px, 1fr)', gap: '1.5rem', minWidth: '1100px', padding: '0 1rem' }}>
-                    {/* Categories Column */}
-                    <div className="admin-card">
-                        <div className="admin-card-header">
-                            <h3>Categories</h3>
-                            {editingCategory && (
-                                <button onClick={resetCategoryForm} className="admin-button admin-button-secondary">
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
+            <div className="admin-columns-container">
+                {/* Categories Column */}
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Categories</h3>
+                        {editingCategory && (
+                            <button onClick={resetCategoryForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
+                    </div>
 
-                        {loading ? (
-                            <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
-                        ) : (
+                    {loading ? (
+                        <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
+                    ) : (
+                        <div style={{ marginBottom: '1rem' }}>
+                            <DraggableList
+                                items={categories}
+                                onReorder={handleReorderCategories}
+                                droppableId="categories-list"
+                                renderItem={(cat) => (
+                                    <div
+                                        onClick={() => { setSelectedCategory(cat); setSelectedSeries(null); }}
+                                        style={{
+                                            padding: '0.75rem',
+                                            marginBottom: '0.5rem',
+                                            background: selectedCategory?.id === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                            borderRadius: '6px',
+                                            cursor: 'grab',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
+                                            <span style={{ color: 'var(--text-color)' }}>{cat.title}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDuplicateCategory(cat); }}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Duplicate
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
+                                                className="admin-button admin-button-danger"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            />
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmitCategory}>
+                        <div className="admin-form-group">
+                            <label>Title</label>
+                            <input
+                                type="text"
+                                value={categoryForm.title}
+                                onChange={(e) => setCategoryForm({ ...categoryForm, title: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="admin-form-group">
+                            <label>Slug</label>
+                            <input
+                                type="text"
+                                value={categoryForm.slug}
+                                onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+                                placeholder="e.g., artwork"
+                                required
+                            />
+                        </div>
+                        <div className="admin-form-group">
+                            <label>Description</label>
+                            <textarea
+                                value={categoryForm.description}
+                                onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                                style={{ minHeight: '80px' }}
+                            />
+                        </div>
+                        <ImageUpload
+                            label="Category Cover Image"
+                            currentImageUrl={categoryForm.image_url}
+                            onUpload={(url) => setCategoryForm({ ...categoryForm, image_url: url })}
+                        />
+                        <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
+                            {editingCategory ? 'Update Category' : 'Add Category'}
+                        </button>
+                    </form>
+                </div>
+
+                {/* Series Column */}
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Series {selectedCategory && `(${selectedCategory.title})`}</h3>
+                        {editingSeries && (
+                            <button onClick={resetSeriesForm} className="admin-button admin-button-secondary">
+                                Cancel
+                            </button>
+                        )}
+                    </div>
+
+                    {!selectedCategory ? (
+                        <p style={{ color: 'var(--text-muted)' }}>Select a category first</p>
+                    ) : (
+                        <>
                             <div style={{ marginBottom: '1rem' }}>
                                 <DraggableList
-                                    items={categories}
-                                    onReorder={handleReorderCategories}
-                                    droppableId="categories-list"
-                                    renderItem={(cat) => (
+                                    items={series}
+                                    onReorder={handleReorderSeries}
+                                    droppableId="series-list"
+                                    renderItem={(s) => (
                                         <div
-                                            onClick={() => { setSelectedCategory(cat); setSelectedSeries(null); }}
+                                            onClick={() => setSelectedSeries(s)}
                                             style={{
                                                 padding: '0.75rem',
                                                 marginBottom: '0.5rem',
-                                                background: selectedCategory?.id === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                                background: selectedSeries?.id === s.id ? 'rgba(255,255,255,0.1)' : 'transparent',
                                                 borderRadius: '6px',
                                                 cursor: 'grab',
                                                 display: 'flex',
@@ -427,25 +532,25 @@ const GalleryEditor = () => {
                                         >
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
-                                                <span style={{ color: 'var(--text-color)' }}>{cat.title}</span>
+                                                <span style={{ color: 'var(--text-color)' }}>{s.title}</span>
                                             </div>
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                 <button
-                                                    onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                                                    onClick={(e) => { e.stopPropagation(); handleEditSeries(s); }}
                                                     className="admin-button admin-button-secondary"
                                                     style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDuplicateCategory(cat); }}
+                                                    onClick={(e) => { e.stopPropagation(); handleDuplicateSeries(s); }}
                                                     className="admin-button admin-button-secondary"
                                                     style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                                 >
                                                     Duplicate
                                                 </button>
                                                 <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
+                                                    onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
                                                     className="admin-button admin-button-danger"
                                                     style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                                 >
@@ -456,292 +561,185 @@ const GalleryEditor = () => {
                                     )}
                                 />
                             </div>
-                        )}
 
-                        <form onSubmit={handleSubmitCategory}>
-                            <div className="admin-form-group">
-                                <label>Title</label>
-                                <input
-                                    type="text"
-                                    value={categoryForm.title}
-                                    onChange={(e) => setCategoryForm({ ...categoryForm, title: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="admin-form-group">
-                                <label>Slug</label>
-                                <input
-                                    type="text"
-                                    value={categoryForm.slug}
-                                    onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
-                                    placeholder="e.g., artwork"
-                                    required
-                                />
-                            </div>
-                            <div className="admin-form-group">
-                                <label>Description</label>
-                                <textarea
-                                    value={categoryForm.description}
-                                    onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-                                    style={{ minHeight: '80px' }}
-                                />
-                            </div>
-                            <ImageUpload
-                                label="Category Cover Image"
-                                currentImageUrl={categoryForm.image_url}
-                                onUpload={(url) => setCategoryForm({ ...categoryForm, image_url: url })}
-                            />
-                            <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                                {editingCategory ? 'Update Category' : 'Add Category'}
+                            <form onSubmit={handleSubmitSeries}>
+                                <div className="admin-form-group">
+                                    <label>Title</label>
+                                    <input
+                                        type="text"
+                                        value={seriesForm.title}
+                                        onChange={(e) => setSeriesForm({ ...seriesForm, title: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="admin-form-group">
+                                    <label>Slug</label>
+                                    <input
+                                        type="text"
+                                        value={seriesForm.slug}
+                                        onChange={(e) => setSeriesForm({ ...seriesForm, slug: e.target.value })}
+                                        placeholder="e.g., paintings"
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
+                                    {editingSeries ? 'Update Series' : 'Add Series'}
+                                </button>
+                            </form>
+                        </>
+                    )}
+                </div>
+
+                {/* Artworks Column */}
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Artworks {selectedSeries && `(${selectedSeries.title})`}</h3>
+                        {editingArtwork && (
+                            <button onClick={resetArtworkForm} className="admin-button admin-button-secondary">
+                                Cancel
                             </button>
-                        </form>
-                    </div>
-
-                    {/* Series Column */}
-                    <div className="admin-card">
-                        <div className="admin-card-header">
-                            <h3>Series {selectedCategory && `(${selectedCategory.title})`}</h3>
-                            {editingSeries && (
-                                <button onClick={resetSeriesForm} className="admin-button admin-button-secondary">
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
-
-                        {!selectedCategory ? (
-                            <p style={{ color: 'var(--text-muted)' }}>Select a category first</p>
-                        ) : (
-                            <>
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <DraggableList
-                                        items={series}
-                                        onReorder={handleReorderSeries}
-                                        droppableId="series-list"
-                                        renderItem={(s) => (
-                                            <div
-                                                onClick={() => setSelectedSeries(s)}
-                                                style={{
-                                                    padding: '0.75rem',
-                                                    marginBottom: '0.5rem',
-                                                    background: selectedSeries?.id === s.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-                                                    borderRadius: '6px',
-                                                    cursor: 'grab',
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center'
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                    <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
-                                                    <span style={{ color: 'var(--text-color)' }}>{s.title}</span>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleEditSeries(s); }}
-                                                        className="admin-button admin-button-secondary"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDuplicateSeries(s); }}
-                                                        className="admin-button admin-button-secondary"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Duplicate
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
-                                                        className="admin-button admin-button-danger"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    />
-                                </div>
-
-                                <form onSubmit={handleSubmitSeries}>
-                                    <div className="admin-form-group">
-                                        <label>Title</label>
-                                        <input
-                                            type="text"
-                                            value={seriesForm.title}
-                                            onChange={(e) => setSeriesForm({ ...seriesForm, title: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="admin-form-group">
-                                        <label>Slug</label>
-                                        <input
-                                            type="text"
-                                            value={seriesForm.slug}
-                                            onChange={(e) => setSeriesForm({ ...seriesForm, slug: e.target.value })}
-                                            placeholder="e.g., paintings"
-                                            required
-                                        />
-                                    </div>
-                                    <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                                        {editingSeries ? 'Update Series' : 'Add Series'}
-                                    </button>
-                                </form>
-                            </>
                         )}
                     </div>
 
-                    {/* Artworks Column */}
-                    <div className="admin-card">
-                        <div className="admin-card-header">
-                            <h3>Artworks {selectedSeries && `(${selectedSeries.title})`}</h3>
-                            {editingArtwork && (
-                                <button onClick={resetArtworkForm} className="admin-button admin-button-secondary">
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
-
-                        {!selectedSeries ? (
-                            <p style={{ color: 'var(--text-muted)' }}>Select a series first</p>
-                        ) : (
-                            <>
-                                <div style={{ marginBottom: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
-                                    <DraggableList
-                                        items={artworks}
-                                        onReorder={handleReorderArtworks}
-                                        droppableId="artworks-list"
-                                        renderItem={(art) => (
-                                            <div
-                                                style={{
-                                                    padding: '0.75rem',
-                                                    marginBottom: '0.5rem',
-                                                    background: 'rgba(255,255,255,0.03)',
-                                                    borderRadius: '6px',
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    cursor: 'grab'
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                    <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
-                                                    <span style={{ color: 'var(--text-color)' }}>{art.title}</span>
-                                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                                                        ({art.year})
-                                                    </span>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <button
-                                                        onClick={() => handleEditArtwork(art)}
-                                                        className="admin-button admin-button-secondary"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDuplicateArtwork(art)}
-                                                        className="admin-button admin-button-secondary"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Duplicate
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteArtwork(art.id)}
-                                                        className="admin-button admin-button-danger"
-                                                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
+                    {!selectedSeries ? (
+                        <p style={{ color: 'var(--text-muted)' }}>Select a series first</p>
+                    ) : (
+                        <>
+                            <div style={{ marginBottom: '1rem', maxHeight: '300px', overflowY: 'auto' }}>
+                                <DraggableList
+                                    items={artworks}
+                                    onReorder={handleReorderArtworks}
+                                    droppableId="artworks-list"
+                                    renderItem={(art) => (
+                                        <div
+                                            style={{
+                                                padding: '0.75rem',
+                                                marginBottom: '0.5rem',
+                                                background: 'rgba(255,255,255,0.03)',
+                                                borderRadius: '6px',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                cursor: 'grab'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ color: 'var(--text-muted)' }}>⋮⋮</span>
+                                                <span style={{ color: 'var(--text-color)' }}>{art.title}</span>
+                                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                                    ({art.year})
+                                                </span>
                                             </div>
-                                        )}
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button
+                                                    onClick={() => handleEditArtwork(art)}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDuplicateArtwork(art)}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Duplicate
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteArtwork(art.id)}
+                                                    className="admin-button admin-button-danger"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                />
+                            </div>
+
+                            <form onSubmit={handleSubmitArtwork}>
+                                <div className="admin-form-group">
+                                    <label>Title</label>
+                                    <input
+                                        type="text"
+                                        value={artworkForm.title}
+                                        onChange={(e) => setArtworkForm({ ...artworkForm, title: e.target.value })}
+                                        required
                                     />
                                 </div>
-
-                                <form onSubmit={handleSubmitArtwork}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                                     <div className="admin-form-group">
-                                        <label>Title</label>
+                                        <label>Year</label>
+                                        <input
+                                            type="number"
+                                            value={artworkForm.year}
+                                            onChange={(e) => setArtworkForm({ ...artworkForm, year: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="admin-form-group">
+                                        <label>Medium</label>
                                         <input
                                             type="text"
-                                            value={artworkForm.title}
-                                            onChange={(e) => setArtworkForm({ ...artworkForm, title: e.target.value })}
-                                            required
+                                            value={artworkForm.medium}
+                                            onChange={(e) => setArtworkForm({ ...artworkForm, medium: e.target.value })}
                                         />
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                                        <div className="admin-form-group">
-                                            <label>Year</label>
-                                            <input
-                                                type="number"
-                                                value={artworkForm.year}
-                                                onChange={(e) => setArtworkForm({ ...artworkForm, year: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="admin-form-group">
-                                            <label>Medium</label>
-                                            <input
-                                                type="text"
-                                                value={artworkForm.medium}
-                                                onChange={(e) => setArtworkForm({ ...artworkForm, medium: e.target.value })}
-                                            />
-                                        </div>
+                                </div>
+                                <div className="admin-form-group">
+                                    <label>Description</label>
+                                    <textarea
+                                        value={artworkForm.description}
+                                        onChange={(e) => setArtworkForm({ ...artworkForm, description: e.target.value })}
+                                        style={{ minHeight: '80px' }}
+                                    />
+                                </div>
+                                <div className="artwork-images-manager" style={{ marginBottom: '1rem' }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Artwork Images</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                                        {artworkForm.images.map((img, idx) => (
+                                            <div key={idx} style={{ position: 'relative' }}>
+                                                <img src={img} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setArtworkForm({ ...artworkForm, images: artworkForm.images.filter((_, i) => i !== idx) })}
+                                                    style={{
+                                                        position: 'absolute', top: '-8px', right: '-8px',
+                                                        background: '#ff4d4d', color: 'white', border: 'none',
+                                                        borderRadius: '50%', width: '18px', height: '18px',
+                                                        fontSize: '12px', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        padding: '0', line_height: '1', zIndex: '1'
+                                                    }}
+                                                >×</button>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="admin-form-group">
-                                        <label>Description</label>
-                                        <textarea
-                                            value={artworkForm.description}
-                                            onChange={(e) => setArtworkForm({ ...artworkForm, description: e.target.value })}
-                                            style={{ minHeight: '80px' }}
-                                        />
-                                    </div>
-                                    <div className="artwork-images-manager" style={{ marginBottom: '1rem' }}>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Artwork Images</label>
-                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                                            {artworkForm.images.map((img, idx) => (
-                                                <div key={idx} style={{ position: 'relative' }}>
-                                                    <img src={img} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setArtworkForm({ ...artworkForm, images: artworkForm.images.filter((_, i) => i !== idx) })}
-                                                        style={{
-                                                            position: 'absolute', top: '-8px', right: '-8px',
-                                                            background: '#ff4d4d', color: 'white', border: 'none',
-                                                            borderRadius: '50%', width: '18px', height: '18px',
-                                                            fontSize: '12px', cursor: 'pointer',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            padding: '0', line_height: '1', zIndex: '1'
-                                                        }}
-                                                    >×</button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <ImageUpload
-                                            onUpload={(url) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, url] })}
-                                            label="Add Artwork Image"
-                                        />
-                                    </div>
-                                    <div className="admin-form-group">
-                                        <label>Video URL (YouTube link or direct video URL)</label>
-                                        <input
-                                            type="text"
-                                            value={artworkForm.video_url}
-                                            onChange={(e) => setArtworkForm({ ...artworkForm, video_url: e.target.value })}
-                                            placeholder="https://youtube.com/watch?v=... or video file URL"
-                                        />
-                                        {artworkForm.video_url && (
-                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                                                Preview will display on the artwork detail page
-                                            </p>
-                                        )}
-                                    </div>
-                                    <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
-                                        {editingArtwork ? 'Update Artwork' : 'Add Artwork'}
-                                    </button>
-                                </form>
-                            </>
-                        )}
-                    </div>
+                                    <ImageUpload
+                                        onUpload={(url) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, url] })}
+                                        label="Add Artwork Image"
+                                    />
+                                </div>
+                                <div className="admin-form-group">
+                                    <label>Video URL (YouTube link or direct video URL)</label>
+                                    <input
+                                        type="text"
+                                        value={artworkForm.video_url}
+                                        onChange={(e) => setArtworkForm({ ...artworkForm, video_url: e.target.value })}
+                                        placeholder="https://youtube.com/watch?v=... or video file URL"
+                                    />
+                                    {artworkForm.video_url && (
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                                            Preview will display on the artwork detail page
+                                        </p>
+                                    )}
+                                </div>
+                                <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
+                                    {editingArtwork ? 'Update Artwork' : 'Add Artwork'}
+                                </button>
+                            </form>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

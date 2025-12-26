@@ -140,7 +140,7 @@ const ShopsEditor = () => {
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(400px, 1fr) minmax(400px, 1fr)', gap: '2rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+            <div className="admin-columns-container">
                 {/* Form */}
                 <div className="admin-card">
                     <div className="admin-card-header">
