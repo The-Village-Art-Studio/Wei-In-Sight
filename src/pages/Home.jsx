@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import CategoryCard from '../components/CategoryCard';
 import Hero3D from '../components/Hero3D';
+import ContactForm from '../components/ContactForm';
 import './Home.css';
 import './Gallery.css';
 import './Music.css';
@@ -343,26 +344,7 @@ const Home = () => {
                     <h1 className="contact-title">Get In Touch</h1>
                     <p className="contact-subtitle">Interested in collaboration or commissioning a piece?</p>
 
-                    <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-                        <div className="form-group">
-                            <label htmlFor="name">Name</label>
-                            <input type="text" id="name" placeholder="Your Name" />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="email">Email</label>
-                            <input type="email" id="email" placeholder="Your Email" />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="message">Message</label>
-                            <textarea id="message" rows="5" placeholder="Your Message"></textarea>
-                        </div>
-                        <Button type="submit" variant="primary">Send Message</Button>
-                    </form>
-
-                    <div className="contact-info">
-                        <p>Email: contact@weiinsight.com</p>
-                        <p>Location: Toronto, Canada</p>
-                    </div>
+                    <ContactForm />
                 </div>
             </section>
         </div>
