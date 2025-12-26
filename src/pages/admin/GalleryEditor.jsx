@@ -129,6 +129,63 @@ const GalleryEditor = () => {
         }
     };
 
+    const handleDuplicateCategory = async (cat) => {
+        setLoading(true);
+        try {
+            // 1. Duplicate Category
+            const newCat = {
+                title: `${cat.title} (Copy)`,
+                description: cat.description,
+                slug: `${cat.slug}-copy-${Date.now()}`,
+                image_url: cat.image_url,
+                order: categories.length
+            };
+            const { data: catData, error: catError } = await supabase.from('categories').insert([newCat]).select().single();
+            if (catError) throw catError;
+
+            // 2. Duplicate Series
+            const { data: seriesData, error: seriesError } = await supabase.from('series').select('*').eq('category_id', cat.id);
+            if (seriesError) throw seriesError;
+
+            for (const s of seriesData) {
+                const newSeries = {
+                    title: s.title,
+                    slug: s.slug,
+                    category_id: catData.id,
+                    order: s.order
+                };
+                const { data: sData, error: sError } = await supabase.from('series').insert([newSeries]).select().single();
+                if (sError) throw sError;
+
+                // 3. Duplicate Artworks
+                const { data: artData, error: artError } = await supabase.from('artworks').select('*').eq('series_id', s.id);
+                if (artError) throw artError;
+
+                for (const art of artData) {
+                    const newArt = {
+                        title: art.title,
+                        year: art.year,
+                        medium: art.medium,
+                        dimensions: art.dimensions,
+                        description: art.description,
+                        images: art.images,
+                        video_url: art.video_url,
+                        series_id: sData.id,
+                        order: art.order
+                    };
+                    await supabase.from('artworks').insert([newArt]);
+                }
+            }
+
+            setMessage({ type: 'success', text: 'Category duplicated successfully!' });
+            fetchCategories();
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Series handlers
     const handleEditSeries = (s) => {
         setEditingSeries(s);
@@ -174,6 +231,47 @@ const GalleryEditor = () => {
             setMessage({ type: 'success', text: 'Series deleted!' });
             setSelectedSeries(null);
             fetchSeries(selectedCategory.id);
+        }
+    };
+
+    const handleDuplicateSeries = async (s) => {
+        setLoading(true);
+        try {
+            // 1. Duplicate Series
+            const newSeries = {
+                title: `${s.title} (Copy)`,
+                slug: `${s.slug}-copy`,
+                category_id: selectedCategory.id,
+                order: series.length
+            };
+            const { data: sData, error: sError } = await supabase.from('series').insert([newSeries]).select().single();
+            if (sError) throw sError;
+
+            // 2. Duplicate Artworks
+            const { data: artData, error: artError } = await supabase.from('artworks').select('*').eq('series_id', s.id);
+            if (artError) throw artError;
+
+            for (const art of artData) {
+                const newArt = {
+                    title: art.title,
+                    year: art.year,
+                    medium: art.medium,
+                    dimensions: art.dimensions,
+                    description: art.description,
+                    images: art.images,
+                    video_url: art.video_url,
+                    series_id: sData.id,
+                    order: art.order
+                };
+                await supabase.from('artworks').insert([newArt]);
+            }
+
+            setMessage({ type: 'success', text: 'Series duplicated successfully!' });
+            fetchSeries(selectedCategory.id);
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -228,6 +326,28 @@ const GalleryEditor = () => {
             setMessage({ type: 'error', text: error.message });
         } else {
             setMessage({ type: 'success', text: 'Artwork deleted!' });
+            fetchArtworks(selectedSeries.id);
+        }
+    };
+
+    const handleDuplicateArtwork = async (art) => {
+        const newArt = {
+            title: `${art.title} (Copy)`,
+            year: art.year,
+            medium: art.medium,
+            dimensions: art.dimensions,
+            description: art.description,
+            images: art.images,
+            video_url: art.video_url,
+            series_id: selectedSeries.id,
+            order: artworks.length
+        };
+
+        const { error } = await supabase.from('artworks').insert([newArt]);
+        if (error) {
+            setMessage({ type: 'error', text: error.message });
+        } else {
+            setMessage({ type: 'success', text: 'Artwork duplicated!' });
             fetchArtworks(selectedSeries.id);
         }
     };
@@ -315,6 +435,13 @@ const GalleryEditor = () => {
                                                 style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                             >
                                                 Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDuplicateCategory(cat); }}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                            >
+                                                Duplicate
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
@@ -416,6 +543,13 @@ const GalleryEditor = () => {
                                                     Edit
                                                 </button>
                                                 <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDuplicateSeries(s); }}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Duplicate
+                                                </button>
+                                                <button
                                                     onClick={(e) => { e.stopPropagation(); handleDeleteSeries(s.id); }}
                                                     className="admin-button admin-button-danger"
                                                     style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
@@ -503,6 +637,13 @@ const GalleryEditor = () => {
                                                     style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                                 >
                                                     Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDuplicateArtwork(art)}
+                                                    className="admin-button admin-button-secondary"
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                                                >
+                                                    Duplicate
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteArtwork(art.id)}

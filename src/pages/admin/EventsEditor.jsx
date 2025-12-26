@@ -94,6 +94,27 @@ const EventsEditor = () => {
         }
     };
 
+    const handleDuplicate = async (event) => {
+        const newEvent = {
+            title: `${event.title} (Copy)`,
+            date: event.date,
+            location: event.location,
+            description: event.description,
+            image_url: event.image_url,
+            button_text: event.button_text,
+            button_link: event.button_link,
+            order: events.length
+        };
+
+        const { error } = await supabase.from('events').insert([newEvent]);
+        if (error) {
+            setMessage({ type: 'error', text: error.message });
+        } else {
+            setMessage({ type: 'success', text: 'Event duplicated!' });
+            fetchEvents();
+        }
+    };
+
     const resetForm = () => {
         setForm({ title: '', date: '', location: '', description: '', image_url: '', button_text: 'Event Details', button_link: '' });
         setEditingEvent(null);
@@ -250,6 +271,13 @@ const EventsEditor = () => {
                                                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                                             >
                                                 Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDuplicate(event)}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                                            >
+                                                Duplicate
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(event.id)}

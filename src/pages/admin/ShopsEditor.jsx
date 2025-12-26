@@ -90,6 +90,25 @@ const ShopsEditor = () => {
         }
     };
 
+    const handleDuplicate = async (shop) => {
+        const newShop = {
+            name: `${shop.name} (Copy)`,
+            type: shop.type,
+            description: shop.description,
+            image_url: shop.image_url,
+            link: shop.link,
+            order: shops.length
+        };
+
+        const { error } = await supabase.from('shops').insert([newShop]);
+        if (error) {
+            setMessage({ type: 'error', text: error.message });
+        } else {
+            setMessage({ type: 'success', text: 'Shop duplicated!' });
+            fetchShops();
+        }
+    };
+
     const resetForm = () => {
         setForm({ name: '', type: '', description: '', image_url: '', link: '' });
         setEditingShop(null);
@@ -222,6 +241,13 @@ const ShopsEditor = () => {
                                                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                                             >
                                                 Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDuplicate(shop)}
+                                                className="admin-button admin-button-secondary"
+                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                                            >
+                                                Duplicate
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(shop.id)}
