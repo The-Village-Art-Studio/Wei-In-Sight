@@ -97,8 +97,14 @@
 }
 
 .artwork-overlay .overlay-year {
-    color: var(--text-muted);
-    font-size: 0.8rem;
+    color: #f0f0f0;
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+    backdrop-filter: blur(2px);
+    margin-top: 0.25rem;
 }
 
 
