@@ -20,8 +20,14 @@ export const AuthProvider = ({ children }) => {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
+            (event, session) => {
                 setUser(session?.user ?? null);
+
+                if (event === 'PASSWORD_RECOVERY') {
+                    // This is handled by a listener, but we can also use window.location
+                    // to redirect to the update password page if we're not using a specialized handler
+                    window.location.href = '/admin/update-password';
+                }
             }
         );
 

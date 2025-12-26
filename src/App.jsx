@@ -18,6 +18,7 @@ import AboutEditor from './pages/admin/AboutEditor';
 import GalleryEditor from './pages/admin/GalleryEditor';
 import EventsEditor from './pages/admin/EventsEditor';
 import ShopsEditor from './pages/admin/ShopsEditor';
+import UpdatePassword from './pages/UpdatePassword';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         {/* Admin Routes - No Navbar/Footer */}
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/update-password" element={<UpdatePassword />} />
         <Route path="/admin" element={<Admin />}>
           <Route index element={<Dashboard />} />
           <Route path="hero" element={<HeroEditor />} />
