@@ -1,4 +1,17 @@
 {
+    "redirects": [
+        {
+            "source": "/",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "admin.weiinsight.com"
+                }
+            ],
+            "destination": "/admin/login",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/(.*)",
