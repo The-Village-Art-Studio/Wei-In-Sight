@@ -38,6 +38,19 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Allow text selection in inputs and admin area */
+input,
+textarea,
+[contenteditable="true"],
+.admin-page,
+.admin-container {
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 .app-container {

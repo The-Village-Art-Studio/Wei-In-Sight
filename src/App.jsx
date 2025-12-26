@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -21,6 +21,32 @@ import ShopsEditor from './pages/admin/ShopsEditor';
 import UpdatePassword from './pages/UpdatePassword';
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Disable right-click context menu on public pages
+    const handleContextMenu = (e) => {
+      if (!location.pathname.startsWith('/admin')) {
+        e.preventDefault();
+      }
+    };
+
+    // Disable image dragging on public pages
+    const handleDragStart = (e) => {
+      if (!location.pathname.startsWith('/admin') && e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('dragstart', handleDragStart);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('dragstart', handleDragStart);
+    };
+  }, [location.pathname]);
+
   return (
     <AuthProvider>
       <Routes>
