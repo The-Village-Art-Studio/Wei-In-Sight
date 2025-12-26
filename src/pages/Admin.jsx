@@ -52,6 +52,9 @@ const Admin = () => {
                     <NavLink to="/admin/shops" className={({ isActive }) => isActive ? 'active' : ''}>
                         🛒 Shops
                     </NavLink>
+                    <NavLink to="/admin/seo" className={({ isActive }) => isActive ? 'active' : ''}>
+                        🔍 SEO
+                    </NavLink>
                 </nav>
 
                 <div className="admin-sidebar-footer">

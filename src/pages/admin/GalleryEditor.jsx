@@ -18,11 +18,16 @@ const GalleryEditor = () => {
     const [editingArtwork, setEditingArtwork] = useState(null);
 
     // Form states
-    const [categoryForm, setCategoryForm] = useState({ title: '', description: '', slug: '', image_url: '' });
+    const [categoryForm, setCategoryForm] = useState({
+        title: '', description: '', slug: '', image_url: '',
+        meta_title: '', meta_description: '', meta_keywords: ''
+    });
     const [seriesForm, setSeriesForm] = useState({ title: '', slug: '' });
     const [artworkForm, setArtworkForm] = useState({
         title: '', year: '', medium: '', dimensions: '', description: '', images: [], video_url: ''
     });
+    const [dimensionUnit, setDimensionUnit] = useState('in'); // 'in' or 'cm'
+    const [seoExpanded, setSeoExpanded] = useState({ category: false, artwork: false });
 
     useEffect(() => {
         fetchCategories();
@@ -298,8 +303,14 @@ const GalleryEditor = () => {
         e.preventDefault();
         if (!selectedSeries) return;
 
+        // Append unit to dimensions if dimensions is provided
+        const dimensionsWithUnit = artworkForm.dimensions
+            ? `${artworkForm.dimensions} ${dimensionUnit}`
+            : '';
+        const formData = { ...artworkForm, dimensions: dimensionsWithUnit };
+
         if (editingArtwork) {
-            const { error } = await supabase.from('artworks').update(artworkForm).eq('id', editingArtwork.id);
+            const { error } = await supabase.from('artworks').update(formData).eq('id', editingArtwork.id);
             if (error) {
                 setMessage({ type: 'error', text: error.message });
             } else {
@@ -308,7 +319,7 @@ const GalleryEditor = () => {
                 fetchArtworks(selectedSeries.id);
             }
         } else {
-            const { error } = await supabase.from('artworks').insert([{ ...artworkForm, series_id: selectedSeries.id, order: artworks.length }]);
+            const { error } = await supabase.from('artworks').insert([{ ...formData, series_id: selectedSeries.id, order: artworks.length }]);
             if (error) {
                 setMessage({ type: 'error', text: error.message });
             } else {
@@ -490,6 +501,61 @@ const GalleryEditor = () => {
                             currentImageUrl={categoryForm.image_url}
                             onUpload={(url) => setCategoryForm({ ...categoryForm, image_url: url })}
                         />
+
+                        {/* Collapsible SEO Section */}
+                        <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                            <button
+                                type="button"
+                                onClick={() => setSeoExpanded(prev => ({ ...prev, category: !prev.category }))}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '6px',
+                                    color: 'var(--text-color)',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <span>🔍 SEO Settings</span>
+                                <span>{seoExpanded.category ? '▼' : '▶'}</span>
+                            </button>
+                            {seoExpanded.category && (
+                                <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '0 0 6px 6px', marginTop: '-1px' }}>
+                                    <div className="admin-form-group">
+                                        <label>Meta Title</label>
+                                        <input
+                                            type="text"
+                                            value={categoryForm.meta_title}
+                                            onChange={(e) => setCategoryForm({ ...categoryForm, meta_title: e.target.value })}
+                                            placeholder="Custom page title for search engines"
+                                        />
+                                    </div>
+                                    <div className="admin-form-group">
+                                        <label>Meta Description</label>
+                                        <textarea
+                                            value={categoryForm.meta_description}
+                                            onChange={(e) => setCategoryForm({ ...categoryForm, meta_description: e.target.value })}
+                                            placeholder="Description for search results (150-160 chars)"
+                                            style={{ minHeight: '60px' }}
+                                        />
+                                    </div>
+                                    <div className="admin-form-group" style={{ marginBottom: 0 }}>
+                                        <label>Meta Keywords</label>
+                                        <input
+                                            type="text"
+                                            value={categoryForm.meta_keywords}
+                                            onChange={(e) => setCategoryForm({ ...categoryForm, meta_keywords: e.target.value })}
+                                            placeholder="keyword1, keyword2, keyword3"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <button type="submit" className="admin-button admin-button-primary" style={{ width: '100%' }}>
                             {editingCategory ? 'Update Category' : 'Add Category'}
                         </button>
@@ -689,12 +755,51 @@ const GalleryEditor = () => {
                                 </div>
                                 <div className="admin-form-group">
                                     <label>Dimensions / Size</label>
-                                    <input
-                                        type="text"
-                                        value={artworkForm.dimensions}
-                                        onChange={(e) => setArtworkForm({ ...artworkForm, dimensions: e.target.value })}
-                                        placeholder="e.g., 24 x 36 inches"
-                                    />
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                        <input
+                                            type="text"
+                                            value={artworkForm.dimensions}
+                                            onChange={(e) => setArtworkForm({ ...artworkForm, dimensions: e.target.value })}
+                                            placeholder={`e.g., 24 x 36`}
+                                            style={{ flex: 1 }}
+                                        />
+                                        <div style={{ display: 'flex', borderRadius: '6px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => setDimensionUnit('in')}
+                                                style={{
+                                                    padding: '0.5rem 0.75rem',
+                                                    background: dimensionUnit === 'in' ? 'var(--primary-color)' : 'transparent',
+                                                    color: dimensionUnit === 'in' ? 'var(--bg-color)' : 'var(--text-color)',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: dimensionUnit === 'in' ? 'bold' : 'normal'
+                                                }}
+                                            >
+                                                in
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setDimensionUnit('cm')}
+                                                style={{
+                                                    padding: '0.5rem 0.75rem',
+                                                    background: dimensionUnit === 'cm' ? 'var(--primary-color)' : 'transparent',
+                                                    color: dimensionUnit === 'cm' ? 'var(--bg-color)' : 'var(--text-color)',
+                                                    border: 'none',
+                                                    borderLeft: '1px solid rgba(255,255,255,0.2)',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: dimensionUnit === 'cm' ? 'bold' : 'normal'
+                                                }}
+                                            >
+                                                cm
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                                        Will be saved as: {artworkForm.dimensions ? `${artworkForm.dimensions} ${dimensionUnit}` : '—'}
+                                    </p>
                                 </div>
                                 <div className="admin-form-group">
                                     <label>Description</label>

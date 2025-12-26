@@ -18,6 +18,7 @@ import AboutEditor from './pages/admin/AboutEditor';
 import GalleryEditor from './pages/admin/GalleryEditor';
 import EventsEditor from './pages/admin/EventsEditor';
 import ShopsEditor from './pages/admin/ShopsEditor';
+import SEOEditor from './pages/admin/SEOEditor';
 import UpdatePassword from './pages/UpdatePassword';
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
           <Route path="gallery" element={<GalleryEditor />} />
           <Route path="events" element={<EventsEditor />} />
           <Route path="shops" element={<ShopsEditor />} />
+          <Route path="seo" element={<SEOEditor />} />
         </Route>
 
         {/* Public Routes - With Navbar/Footer */}
