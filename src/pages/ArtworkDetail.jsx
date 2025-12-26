@@ -5,10 +5,11 @@ import { supabase } from '../lib/supabaseClient';
 import SEOHead from '../components/SEOHead';
 import { generateArtworkSchema, generateBreadcrumbSchema } from '../utils/structuredData';
 
-// Helper function to extract YouTube video ID
+// Helper function to extract YouTube video ID (supports regular videos and Shorts)
 const getYouTubeId = (url) => {
     if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    // Extended regex to support YouTube Shorts (youtube.com/shorts/VIDEO_ID)
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
 };
@@ -107,46 +108,32 @@ const ArtworkDetail = () => {
             </button>
 
             <div className="artwork-container">
-                {/* Left: Slider */}
-                <div className="artwork-slider" onClick={toggleModal} style={{ cursor: 'zoom-in' }}>
-                    <div className="slider-wrapper">
-                        {images.length > 0 ? (
-                            <img
-                                src={images[currentSlide]}
-                                alt={`${artwork.title} - View ${currentSlide + 1}`}
-                                className="slider-image"
-                            />
-                        ) : (
-                            <div className="no-image-placeholder">No images available</div>
-                        )}
+                {/* Left: Slider and Video */}
+                <div className="artwork-left-column">
+                    <div className="artwork-slider" onClick={toggleModal} style={{ cursor: 'zoom-in' }}>
+                        <div className="slider-wrapper">
+                            {images.length > 0 ? (
+                                <img
+                                    src={images[currentSlide]}
+                                    alt={`${artwork.title} - View ${currentSlide + 1}`}
+                                    className="slider-image"
+                                />
+                            ) : (
+                                <div className="no-image-placeholder">No images available</div>
+                            )}
 
-                        {images.length > 1 && (
-                            <>
-                                <button className="slider-btn prev" onClick={prevSlide}>‹</button>
-                                <button className="slider-btn next" onClick={nextSlide}>›</button>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Right: Info */}
-                <div className="artwork-info">
-                    <h1 className="artwork-title">{artwork.title}</h1>
-                    <p className="artwork-medium-year">
-                        {artwork.medium}{artwork.year ? `, ${artwork.year}` : ''}
-                    </p>
-                    {artwork.dimensions && (
-                        <p className="artwork-dimensions">{artwork.dimensions}</p>
-                    )}
-
-                    <div className="artwork-description-section">
-                        <h3 className="artwork-description-header">About the artwork</h3>
-                        <p className="artwork-description">{artwork.description}</p>
+                            {images.length > 1 && (
+                                <>
+                                    <button className="slider-btn prev" onClick={prevSlide}>‹</button>
+                                    <button className="slider-btn next" onClick={nextSlide}>›</button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Video Section */}
+                    {/* Video Section - Below the slider */}
                     {artwork.video_url && (
-                        <div className="artwork-video-section" style={{ marginTop: '2rem' }}>
+                        <div className="artwork-video-section" style={{ marginTop: '1.5rem' }}>
                             <h3 className="artwork-description-header">Video</h3>
                             {getYouTubeId(artwork.video_url) ? (
                                 <div className="video-container" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px' }}>
@@ -169,6 +156,22 @@ const ArtworkDetail = () => {
                             )}
                         </div>
                     )}
+                </div>
+
+                {/* Right: Info */}
+                <div className="artwork-info">
+                    <h1 className="artwork-title">{artwork.title}</h1>
+                    <p className="artwork-medium-year">
+                        {artwork.medium}{artwork.year ? `, ${artwork.year}` : ''}
+                    </p>
+                    {artwork.dimensions && (
+                        <p className="artwork-dimensions">{artwork.dimensions}</p>
+                    )}
+
+                    <div className="artwork-description-section">
+                        <h3 className="artwork-description-header">About the artwork</h3>
+                        <p className="artwork-description">{artwork.description}</p>
+                    </div>
                 </div>
             </div>
 

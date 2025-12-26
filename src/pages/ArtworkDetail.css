@@ -153,14 +153,37 @@
         align-items: flex-start;
     }
 
-    .artwork-slider {
+    .artwork-left-column {
         width: 60%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .artwork-slider {
+        width: 100%;
     }
 
     .artwork-info {
         width: 40%;
         padding: 3rem;
     }
+}
+
+/* Left Column Styles */
+.artwork-left-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Video Section Styles */
+.artwork-video-section {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* Modal Gallery Styles */
