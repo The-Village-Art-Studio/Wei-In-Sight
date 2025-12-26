@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import ImageUpload from '../../components/ImageUpload';
+import ImageUpload, { deleteImagesFromStorage } from '../../components/ImageUpload';
 import DraggableList from '../../components/DraggableList';
 
 const GalleryEditor = () => {
@@ -331,12 +331,21 @@ const GalleryEditor = () => {
     };
 
     const handleDeleteArtwork = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this artwork?')) return;
+        if (!window.confirm('Are you sure you want to delete this artwork? This will also delete all associated images from storage.')) return;
+
+        // Find the artwork to get its images
+        const artworkToDelete = artworks.find(a => a.id === id);
+
+        // Delete from database first
         const { error } = await supabase.from('artworks').delete().eq('id', id);
         if (error) {
             setMessage({ type: 'error', text: error.message });
         } else {
-            setMessage({ type: 'success', text: 'Artwork deleted!' });
+            // Delete images from storage
+            if (artworkToDelete?.images && artworkToDelete.images.length > 0) {
+                await deleteImagesFromStorage(artworkToDelete.images);
+            }
+            setMessage({ type: 'success', text: 'Artwork and images deleted!' });
             fetchArtworks(selectedSeries.id);
         }
     };
@@ -832,7 +841,9 @@ const GalleryEditor = () => {
                                     </div>
                                     <ImageUpload
                                         onUpload={(url) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, url] })}
-                                        label="Add Artwork Image"
+                                        onMultiUpload={(urls) => setArtworkForm({ ...artworkForm, images: [...artworkForm.images, ...urls] })}
+                                        label="Add Artwork Images"
+                                        multiple={true}
                                     />
                                 </div>
                                 <div className="admin-form-group">
