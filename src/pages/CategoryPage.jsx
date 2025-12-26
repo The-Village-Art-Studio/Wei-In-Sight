@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import './CategoryPage.css';
 import { supabase } from '../lib/supabaseClient';
 import { useState, useEffect } from 'react';
+import SEOHead from '../components/SEOHead';
+import { generateArtGallerySchema, generateBreadcrumbSchema } from '../utils/structuredData';
 
 // Fallback data is kept for structure if DB is empty
 const fallbackCategoryData = {
@@ -96,8 +98,26 @@ const CategoryPage = () => {
         }
     };
 
+    // Generate SEO schemas
+    const categorySchema = category ? [
+        generateArtGallerySchema(category),
+        generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: data.title, url: `/gallery/${categoryId}` }
+        ])
+    ] : null;
+
     return (
         <div className="category-page">
+            {category && (
+                <SEOHead
+                    title={category.title}
+                    description={category.description || `${category.title} collection by Jacky (Wei) Ho`}
+                    image={category.image_url}
+                    url={`/gallery/${categoryId}`}
+                    schema={categorySchema}
+                />
+            )}
             <div className="category-header">
                 <a href="/#gallery" onClick={handleBackClick} className="back-link">← Back to Gallery</a>
                 <h1 className="category-title">{data.title}</h1>

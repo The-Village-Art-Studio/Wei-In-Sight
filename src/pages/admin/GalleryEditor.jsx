@@ -683,8 +683,18 @@ const GalleryEditor = () => {
                                             type="text"
                                             value={artworkForm.medium}
                                             onChange={(e) => setArtworkForm({ ...artworkForm, medium: e.target.value })}
+                                            placeholder="e.g., Oil on canvas"
                                         />
                                     </div>
+                                </div>
+                                <div className="admin-form-group">
+                                    <label>Dimensions / Size</label>
+                                    <input
+                                        type="text"
+                                        value={artworkForm.dimensions}
+                                        onChange={(e) => setArtworkForm({ ...artworkForm, dimensions: e.target.value })}
+                                        placeholder="e.g., 24 x 36 inches"
+                                    />
                                 </div>
                                 <div className="admin-form-group">
                                     <label>Description</label>

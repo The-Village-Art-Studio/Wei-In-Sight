@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ArtworkDetail.css';
 import { supabase } from '../lib/supabaseClient';
+import SEOHead from '../components/SEOHead';
+import { generateArtworkSchema, generateBreadcrumbSchema } from '../utils/structuredData';
 
 // Helper function to extract YouTube video ID
 const getYouTubeId = (url) => {
@@ -14,7 +16,7 @@ const getYouTubeId = (url) => {
 // Fallback data removed or moved to default initialization
 
 const ArtworkDetail = () => {
-    const { artworkId } = useParams();
+    const { artworkId, categoryId } = useParams();
     const navigate = useNavigate();
     const [artwork, setArtwork] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -81,8 +83,25 @@ const ArtworkDetail = () => {
 
     const images = artwork.images || [];
 
+    // Generate SEO schemas
+    const artworkSchema = [
+        generateArtworkSchema(artwork, { slug: categoryId }),
+        generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: 'Gallery', url: `/#gallery` },
+            { name: artwork.title }
+        ])
+    ];
+
     return (
         <div className="artwork-detail-page">
+            <SEOHead
+                title={artwork.title}
+                description={artwork.description || `${artwork.title} by Jacky (Wei) Ho - ${artwork.medium || 'Mixed Media'}, ${artwork.year || ''}`}
+                image={artwork.images?.[0]}
+                url={`/gallery/${categoryId}/artwork/${artworkId}`}
+                schema={artworkSchema}
+            />
             <button className="back-button" onClick={() => navigate(-1)}>
                 ← Back
             </button>

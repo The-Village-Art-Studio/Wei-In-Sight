@@ -4,6 +4,8 @@ import Button from '../components/Button';
 import CategoryCard from '../components/CategoryCard';
 import Hero3D from '../components/Hero3D';
 import ContactForm from '../components/ContactForm';
+import SEOHead from '../components/SEOHead';
+import { generateOrganizationSchema, generatePersonSchema, generateWebSiteSchema } from '../utils/structuredData';
 import './Home.css';
 import './Gallery.css';
 import './Music.css';
@@ -180,9 +182,21 @@ const Home = () => {
     const displayEvents = dbEvents && dbEvents.length > 0 ? dbEvents : events;
     const displayShops = dbShops && dbShops.length > 0 ? dbShops : shops;
     const displayExhibitions = dbExhibitions && dbExhibitions.length > 0 ? dbExhibitions : exhibitions;
+    // Combine schemas for homepage
+    const homeSchema = [
+        generateOrganizationSchema(),
+        generatePersonSchema(),
+        generateWebSiteSchema()
+    ];
 
     return (
         <div className="home-page">
+            <SEOHead
+                title={null}
+                description="Jacky (Wei) Ho - Contemporary Artist specializing in Artwork, Fashion Design, Product Design, and Watchmaking. Explore paintings, sculptures, digital art, and more."
+                url="/"
+                schema={homeSchema}
+            />
             {/* Hero Section */}
             <section id="home" className="hero-section">
                 <div className="hero-content">

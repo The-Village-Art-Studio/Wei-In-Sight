@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+
+# Sitemaps
+Sitemap: https://weiinsight.com/sitemap.xml
+
+# Crawl-delay (optional, some bots respect this)
+Crawl-delay: 1
+
+# Block AI training crawlers (optional - uncomment if desired)
+# User-agent: GPTBot
+# Disallow: /
+# User-agent: ChatGPT-User
+# Disallow: /
+# User-agent: CCBot
+# Disallow: /
