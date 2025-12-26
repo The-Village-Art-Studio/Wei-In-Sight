@@ -8,7 +8,7 @@
                     "value": "admin.weiinsight.com"
                 }
             ],
-            "destination": "/admin/login",
+            "destination": "https://weiinsight.com/admin/login",
             "permanent": true
         }
     ],
