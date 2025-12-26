@@ -48,7 +48,7 @@
 .form-group input,
 .form-group textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 1rem;
@@ -58,6 +58,7 @@
     transition: all 0.3s ease;
     resize: vertical;
     appearance: none;
+    -webkit-appearance: none;
 }
 
 .form-group input:focus,
