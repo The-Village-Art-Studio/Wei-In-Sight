@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CanvasWrapper from './components/CanvasWrapper';
 import ScrollToTop from './components/ScrollToTop';
+import ScrollRestoration from './components/ScrollRestoration';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ArtworkDetail from './pages/ArtworkDetail';
@@ -70,6 +71,7 @@ function App() {
           element={
             <div className="app-container">
               <ScrollToTop />
+              <ScrollRestoration />
               <CanvasWrapper />
               <Navbar />
               <main className="main-content">
