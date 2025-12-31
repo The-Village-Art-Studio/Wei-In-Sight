@@ -179,6 +179,16 @@
     background: var(--bg-color);
     /* Ensure background is solid for sticky */
     z-index: 100;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none;
+    /* Hide scrollbar for IE/Edge */
+}
+
+.series-menu::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar for Chrome/Safari */
 }
 
 .sticky-menu {
@@ -201,6 +211,7 @@
     letter-spacing: 1px;
     white-space: nowrap;
     border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .series-tab:hover {
