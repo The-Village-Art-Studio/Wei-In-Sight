@@ -285,6 +285,24 @@
 }
 
 @media (max-width: 768px) {
+    .artwork-slider {
+        padding: 1.5rem;
+    }
+
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .slider-btn.prev {
+        left: 10px;
+    }
+
+    .slider-btn.next {
+        right: 10px;
+    }
+
     .modal-btn {
         width: 40px;
         height: 40px;
