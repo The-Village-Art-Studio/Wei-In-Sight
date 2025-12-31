@@ -167,35 +167,57 @@
     font-size: 1rem;
 }
 
+/* Series Menu Wrapper with Fade Indicators */
+.series-menu-wrapper {
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+    background: var(--bg-color);
+}
+
+.series-menu-wrapper::before,
+.series-menu-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.series-menu-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-color), transparent);
+}
+
+.series-menu-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-color), transparent);
+}
+
 /* Series Menu Styles */
 .series-menu {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 3rem;
+    margin-bottom: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 1rem;
     padding-top: 1rem;
+    padding-left: 40px;
+    padding-right: 40px;
     overflow-x: auto;
     background: var(--bg-color);
-    /* Ensure background is solid for sticky */
-    z-index: 100;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /* Hide scrollbar for Firefox */
     -ms-overflow-style: none;
-    /* Hide scrollbar for IE/Edge */
 }
 
 .series-menu::-webkit-scrollbar {
     display: none;
-    /* Hide scrollbar for Chrome/Safari */
 }
 
-.sticky-menu {
-    position: sticky;
-    top: 80px;
-    /* Below navbar */
-}
+
 
 .series-tab {
     background: transparent;
@@ -253,20 +275,57 @@
 
 @media (max-width: 768px) {
 
-    .placeholder-grid,
-    .artwork-grid {
+    .placeholder-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Horizontal scroll for artwork grid on mobile */
+    .artwork-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .artwork-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .artwork-item {
+        flex: 0 0 70vw;
+        max-width: 280px;
+        scroll-snap-align: start;
     }
 
     .placeholder-item {
         height: 240px;
     }
+
+    .series-menu-wrapper::before,
+    .series-menu-wrapper::after {
+        width: 30px;
+    }
+
+    .series-menu {
+        padding-left: 30px;
+        padding-right: 30px;
+        gap: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
 
-    .placeholder-grid,
-    .artwork-grid {
+    .placeholder-grid {
         grid-template-columns: 1fr;
+    }
+
+    .artwork-item {
+        flex: 0 0 75vw;
+        max-width: 260px;
     }
 }
