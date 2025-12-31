@@ -127,16 +127,18 @@ const CategoryPage = () => {
             <div className="category-content">
                 {series.length > 0 ? (
                     <>
-                        <div className="series-menu sticky-menu">
-                            {series.map((s) => (
-                                <button
-                                    key={s.id}
-                                    className="series-tab"
-                                    onClick={() => handleScrollToSeries(s.id)}
-                                >
-                                    {s.title}
-                                </button>
-                            ))}
+                        <div className="series-menu-wrapper">
+                            <div className="series-menu sticky-menu">
+                                {series.map((s) => (
+                                    <button
+                                        key={s.id}
+                                        className="series-tab"
+                                        onClick={() => handleScrollToSeries(s.id)}
+                                    >
+                                        {s.title}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="series-sections">
